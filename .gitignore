@@ -1,0 +1,6 @@
+.vscode
+node_modules
+dist
+db.sqlite3
+*.log
+

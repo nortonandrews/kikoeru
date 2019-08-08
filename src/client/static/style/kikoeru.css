@@ -1,0 +1,192 @@
+/**
+ * Logo for the navbars.
+ */
+
+.k-logo {
+    font-size: 1.5em;
+    font-family: 'Big Caslon', 'Times New Roman', Times, serif;
+}
+
+.k-logo-muted {
+    font-size: 4em !important;
+    opacity: 0.3;
+}
+
+.k-logo::after {
+    content: 'K';
+}
+
+/**
+ * Badge/label links (VAs)
+ */
+
+.k-label-link {
+    color: #fff !important;
+    text-decoration: none !important;
+    margin-right: 3px;
+}
+
+.k-label-link:clicked {
+    background-color: #5dd7a9;
+}
+
+.k-label-link:hover {
+    background-color: #32bc88;
+}
+
+/**
+ * Play/menu icons in the queue card.
+ */
+
+.k-button-icon {
+    padding: 0;
+    width: 20px;
+    transition-property: color, transform, -webkit-transform;
+    transition-duration: 0.3s;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.k-button-icon:hover, .k-button-active {
+    color: #1e87f0;
+    -webkit-transform: scale(1.15);
+    transform: scale(1.15);
+}
+
+/**
+ * Bottom player bar.
+ */
+
+.k-player-bar {
+    position: fixed;
+    width: 100%;
+    bottom: 0;
+    padding: 8px 8px 8px 14px;
+    background-color: #fff;
+    box-shadow: 0 0 12px rgba(0, 0, 0, 0.2);
+    border-top: 1px solid rgba(0, 0, 0, 0.15);
+}
+
+@keyframes button-touch-animation {
+    0% {
+        transform: scale(0, 0);
+        opacity: 1;
+    }
+    20% {
+        transform: scale(25, 25);
+        opacity: 1;
+    }
+    100% {
+        opacity: 0;
+        transform: scale(40, 40);
+    }
+}
+
+.k-player-button {
+    background-color: transparent;
+    background-repeat: no-repeat;
+    border: none;
+    cursor: pointer;
+    overflow: hidden;
+    outline: none;
+    margin-left: 12px;
+    margin-right: 12px;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.k-player-button:after {
+    content: '';
+    overflow: visible !important;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 2px;
+    height: 2px;
+    background: rgba(255, 255, 255, 0.5);
+    opacity: 0;
+    border-radius: 100%;
+    transform: scale(1, 1) translate(-50%);
+    transform-origin: 50% 50%;
+}
+
+.k-player-button:hover:not(:active)::after {
+    animation: button-touch-animation 0.5s ease-out;
+}
+
+.k-invert {
+    filter: invert(100%);
+}
+
+.k-player-seekbar {
+    margin-bottom: 0px;
+    position: relative;
+}
+
+.k-player-seekbar-progress {
+    height: 5px;
+    background: #0000;
+}
+
+.k-progress-bar {
+    height: 100%;
+    position: relative;
+    background-color: #5dd7a9;
+}
+
+.k-progress-bar::after {
+    overflow: hidden;
+    content: " ";
+    display: block;
+    position: absolute;
+    width: 14px;
+    height: 14px;
+    background-color: #5dd7a9;
+    border-radius: 8px;
+    top: -4px;
+    right: -6px;
+    z-index: 50;
+}
+
+/**
+ * Hide original range input elements.
+ */
+
+.k-player-seekbar input[type="range"] {
+    -webkit-appearance: none;
+    width: calc(100% + 0px);
+    overflow-x: hidden;
+    height: 32px;
+    margin: 0;
+    padding: 0;
+    position: absolute;
+    top: -14px;
+    left: -8px;
+    z-index: 2;
+    background: transparent;
+    outline: 0;
+    border: 0;
+}
+
+.k-player-seekbar input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    display: block;
+    width: 48px;
+    height: 48px;
+    background-color: transparent;
+}
+
+/* Mozilla: https://developer.mozilla.org/en-US/docs/User:Jonathan_Watt/range */
+.k-player-seekbar input[type="range"]::-moz-range-thumb {
+    background: transparent;
+    border: 0;
+    width: 48px;
+    height: 48px;
+}
+
+.k-player-seekbar input[type="range"]::-moz-range-track {
+    background: transparent;
+    border: 0;
+}
+
+.k-player-seekbar input[type="range"]::-moz-focus-outer {
+    border: 0;
+}

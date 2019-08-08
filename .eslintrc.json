@@ -1,0 +1,13 @@
+{
+  "parser": "babel-eslint",
+  "extends": ["airbnb"],
+  "env": {
+    "browser": true,
+    "node": true
+  },
+  "rules": {
+    "import/no-extraneous-dependencies": [ 2, {"devDependencies": true}],
+    "react/react-in-jsx-scope": 0,
+    "react/prop-types": 0
+  }
+}
