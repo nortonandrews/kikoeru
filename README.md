@@ -48,6 +48,14 @@ npm start
 ### Configuration
 You must change `rootDir` in the `config.json` to point to the directory where you keep your voice works. Each work must be a folder containing an RJ code anywhere in its name.
 
+**NOTE:** Even if you're on Windows, you still need to use forward slashes when specifying `rootDir`. For example:
+```json
+{
+  "rootDir": "D:/Downloads/Voice",
+  "worksPerPage": 12
+}
+```
+
 After this is done, you may run the initial scan:
 ```bash
 npm run scan
