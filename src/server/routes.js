@@ -10,7 +10,8 @@ const router = express.Router();
 
 // GET work cover image
 router.get('/cover/:id', (req, res, next) => {
-  res.sendFile(path.join(config.rootDir, 'Images', `RJ${req.params.id}.jpg`), (err) => {
+  const rjcode = (`000000${req.params.id}`).slice(-6);
+  res.sendFile(path.join(config.rootDir, 'Images', `RJ${rjcode}.jpg`), (err) => {
     if (err) {
       next(err);
     }
