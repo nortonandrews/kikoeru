@@ -78,40 +78,47 @@ const performCleanup = () => {
 };
 
 const performScan = () => {
-  createSchema()
-    .then(() => {
-      console.log(' * Starting scan...');
+  fs.mkdir(path.join(config.rootDir, 'Images'), (direrr) => {
+    if (direrr && direrr.errno !== -17) {
+      console.error(` ! ERROR while trying to create Images folder: ${direrr}`);
+      return;
+    }
 
-      getFolderList()
-        .then((folders) => {
-          const promises = [];
+    createSchema()
+      .then(() => {
+        console.log(' * Starting scan...');
 
-          for (let i = 0; i < folders.length; i += 1) {
-            const folder = folders[i];
-            const id = folder.match(/RJ(\d{6})/)[1];
+        getFolderList()
+          .then((folders) => {
+            const promises = [];
 
-            promises.push(processFolder(id, folder));
-          }
+            for (let i = 0; i < folders.length; i += 1) {
+              const folder = folders[i];
+              const id = folder.match(/RJ(\d{6})/)[1];
 
-          Promise.all(promises)
-            .then((results) => {
-              const skipCount = results.reduce((a, b) => a + b, 0);
-              console.log(` * Finished scan. Skipped ${skipCount} folders already in database.`);
-              performCleanup()
-                .then(() => {
-                  console.log(' * Finished cleanup.');
-                  db.knex.destroy();
-                })
-                .catch(err => console.error(` ! ERROR while performing cleanup: ${err}`));
-            });
-        })
-        .catch((err) => {
-          console.error(` ! ERROR while performing scan: ${err}`);
-        });
-    })
-    .catch((err) => {
-      console.error(` ! ERROR while creating schema: ${err}`);
-    });
+              promises.push(processFolder(id, folder));
+            }
+
+            Promise.all(promises)
+              .then((results) => {
+                const skipCount = results.reduce((a, b) => a + b, 0);
+                console.log(` * Finished scan. Skipped ${skipCount} folders already in database.`);
+                performCleanup()
+                  .then(() => {
+                    console.log(' * Finished cleanup.');
+                    db.knex.destroy();
+                  })
+                  .catch(err => console.error(` ! ERROR while performing cleanup: ${err}`));
+              });
+          })
+          .catch((err) => {
+            console.error(` ! ERROR while performing scan: ${err}`);
+          });
+      })
+      .catch((err) => {
+        console.error(` ! ERROR while creating schema: ${err}`);
+      });
+  });
 };
 
 performScan();
