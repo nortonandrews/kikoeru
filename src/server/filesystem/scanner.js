@@ -79,7 +79,7 @@ const performCleanup = () => {
 
 const performScan = () => {
   fs.mkdir(path.join(config.rootDir, 'Images'), (direrr) => {
-    if (direrr && direrr.errno !== -17) {
+    if (direrr && direrr.code !== 'EEXIST') {
       console.error(` ! ERROR while trying to create Images folder: ${direrr}`);
       return;
     }
