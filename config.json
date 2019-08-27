@@ -1,4 +1,5 @@
 {
   "rootDir": "/mnt/Media/Voice",
+  "password": false,
   "worksPerPage": 12
 }
