@@ -7,6 +7,8 @@ const mapStateToProps = state => ({
   seek: state.seek,
   source: state.queue[state.queueIndex]
     ? `/api/stream/${state.queue[state.queueIndex].hash}` : null,
+  queue: state.queue,
+  queueIndex: state.queueIndex,
 });
 
 class AudioElement extends Component {
@@ -14,6 +16,8 @@ class AudioElement extends Component {
     play: () => {
       const { dispatch } = this.props;
       dispatch({ type: 'PLAY' });
+
+      this.updateMetadata();
     },
     pause: () => {
       const { dispatch } = this.props;
@@ -79,6 +83,38 @@ class AudioElement extends Component {
     this.audioRef.current.removeEventListener('pause', this.eventHandlers.pause);
     this.audioRef.current.removeEventListener('ended', this.eventHandlers.ended);
     this.audioRef.current.removeEventListener('timeupdate', this.eventHandlers.timeUpdate);
+  }
+
+  updateMetadata() {
+    const { dispatch, queue, queueIndex } = this.props;
+    const { hash } = queue[queueIndex];
+    const id = hash.substring(0, hash.lastIndexOf('/'));
+
+    // TODO: this fetch causes the notification to show no metadata for a second
+    // while it fetches, consider keeping this saved client-side somewhere
+    fetch(`/api/work/${id}`)
+      .then(res => res.json())
+      .then((metadata) => {
+        if ('mediaSession' in navigator) {
+          navigator.mediaSession.metadata = new MediaMetadata({
+            title: queue[queueIndex].title,
+            artist: metadata.circle.name,
+            album: metadata.title,
+            artwork: [
+              { src: `/api/cover/${id}`, type: 'image/jpeg' },
+            ],
+          });
+
+          const prev = queueIndex === 0 ? null : () => dispatch({ type: 'PREVIOUS_TRACK' });
+          const next = queueIndex === queue.length - 1 ? null : () => dispatch({ type: 'NEXT_TRACK' });
+
+          navigator.mediaSession.setActionHandler('previoustrack', prev);
+          navigator.mediaSession.setActionHandler('nexttrack', next);
+        }
+      })
+      .catch((err) => {
+        throw new Error(`Failed to fetch /api/work/${id}: ${err}`);
+      });
   }
 
   render() {
