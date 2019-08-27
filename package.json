@@ -5,7 +5,7 @@
   "main": "src/server/index.jsx",
   "scripts": {
     "build": "webpack --mode production",
-    "start": "NODE_ENV=production node src/server/index.js",
+    "start": "cross-env NODE_ENV=production node src/server/index.js",
     "client": "webpack-dev-server --mode development --devtool inline-source-map --hot",
     "server": "nodemon src/server/index.js",
     "dev": "concurrently \"npm run server\" \"npm run client\"",
@@ -15,6 +15,7 @@
   "author": "nortonandrews",
   "license": "GPL-3.0-or-later",
   "dependencies": {
+    "cross-env": "^5.2.0",
     "express": "^4.17.1",
     "htmlparser2": "^3.10.1",
     "knex": "^0.19.0",
