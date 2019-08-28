@@ -41,8 +41,16 @@ const processFolder = (id, folder) => db.knex('t_work')
         console.log(` -> [RJ${rjcode}] Downloading cover image...`);
         fetch(`https://hvdb.me/WorkImages/RJ${rjcode}.jpg`)
           .then((imageRes) => {
+            if (!imageRes.ok) {
+              throw new Error(imageRes.statusText);
+            }
+          })
+          .then((imageRes) => {
             saveCoverImageToDisk(imageRes.body, rjcode)
               .then(() => console.log(` -> [RJ${rjcode}] Cover image downloaded!`));
+          })
+          .catch(() => {
+            console.log(`  ! [RJ${rjcode}] Failed to download cover image.`);
           });
 
         // eslint-disable-next-line no-param-reassign
