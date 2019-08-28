@@ -81,10 +81,14 @@ const scrapeWorkMetadata = id => new Promise((resolve, reject) => {
         },
       }, { decodeEntities: true });
       parser.write(res);
+      parser.end();
 
-      resolve(work);
-    })
-    .catch(err => reject(new Error(`Failed to scrape from HVDB: ${err}`)));
+      if (work.tags.length === 0 && work.vas.length === 0) {
+        reject(new Error('Couldn\'t parse data from HVDB work page.'));
+      } else {
+        resolve(work);
+      }
+    });
 });
 
 module.exports = scrapeWorkMetadata;

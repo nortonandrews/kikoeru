@@ -50,6 +50,10 @@ const processFolder = (id, folder) => db.knex('t_work')
         return db.insertWorkMetadata(metadata)
           .then(console.log(` -> [RJ${rjcode}] Finished adding to the database!`))
           .then(() => 0);
+      })
+      .catch((err) => {
+        console.log(`  ! [RJ${rjcode}] Failed to fetch metadata from HVDB: ${err}`);
+        return 0;
       });
   });
 
