@@ -2,20 +2,24 @@ const crypto = require('crypto');
 const path = require('path');
 const express = require('express');
 const session = require('express-session');
+const memorystore = require('memorystore');
 
 const routes = require('./routes');
 const { router: authRoutes, authenticator } = require('./auth');
 
 const app = express();
+const MemoryStore = memorystore(session);
 
 // For handling authentication POST
 app.use(express.urlencoded({ extended: false }));
 
 // Use session middleware
 app.use(session({
+  cookie: { maxAge: 24 * 60 * 60 * 1000 },
   resave: false,
   saveUninitialized: false,
   secret: process.env.SECRET || crypto.randomBytes(32).toString('hex'),
+  store: new MemoryStore({ checkPeriod: 24 * 60 * 60 * 1000 }),
 }));
 
 // Use authenticator middleware
