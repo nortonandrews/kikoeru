@@ -7,6 +7,7 @@
   },
   "rules": {
     "import/no-extraneous-dependencies": [ 2, {"devDependencies": true}],
+    "no-restricted-syntax": [0, "iterators/generators"],
     "react/react-in-jsx-scope": 0,
     "react/prop-types": 0
   }

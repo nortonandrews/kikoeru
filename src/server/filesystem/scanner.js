@@ -48,7 +48,7 @@ const processFolder = (id, folder) => db.knex('t_work')
         // eslint-disable-next-line no-param-reassign
         metadata.dir = folder;
         return db.insertWorkMetadata(metadata)
-          .then(console.log(` -> Finished adding RJ${rjcode}!`))
+          .then(console.log(` -> [RJ${rjcode}] Finished adding to the database!`))
           .then(() => 0);
       });
   });
@@ -65,6 +65,7 @@ const performCleanup = () => {
             .then((result) => {
               const rjcode = (`000000${work.id}`).slice(-6); // zero-pad to 6 digits
               deleteCoverImageFromDisk(rjcode)
+                .catch(() => console.log(` -> [RJ${rjcode}] Failed to delete cover image.`))
                 .then(() => resolve(result));
             })
             .catch(err => reject(err));
@@ -81,42 +82,43 @@ const performScan = () => {
   fs.mkdir(path.join(config.rootDir, 'Images'), (direrr) => {
     if (direrr && direrr.code !== 'EEXIST') {
       console.error(` ! ERROR while trying to create Images folder: ${direrr}`);
-      return;
+      process.exit(1);
     }
 
     createSchema()
-      .then(() => {
-        console.log(' * Starting scan...');
+      .then(() => performCleanup())
+      .catch((err) => {
+        console.error(` ! ERROR while performing cleanup: ${err}`);
+        process.exit(1);
+      })
+      .then(async () => {
+        console.log(' * Finished cleanup. Starting scan...');
+        const promises = [];
 
-        getFolderList()
-          .then((folders) => {
-            const promises = [];
+        try {
+          for await (const folder of getFolderList()) {
+            const id = folder.match(/RJ(\d{6})/)[1];
+            promises.push(processFolder(id, folder));
+          }
+        } catch (err) {
+          console.error(` ! ERROR while trying to get folder list: ${err}`);
+          process.exit(1);
+        }
 
-            for (let i = 0; i < folders.length; i += 1) {
-              const folder = folders[i];
-              const id = folder.match(/RJ(\d{6})/)[1];
-
-              promises.push(processFolder(id, folder));
-            }
-
-            Promise.all(promises)
-              .then((results) => {
-                const skipCount = results.reduce((a, b) => a + b, 0);
-                console.log(` * Finished scan. Skipped ${skipCount} folders already in database.`);
-                performCleanup()
-                  .then(() => {
-                    console.log(' * Finished cleanup.');
-                    db.knex.destroy();
-                  })
-                  .catch(err => console.error(` ! ERROR while performing cleanup: ${err}`));
-              });
+        Promise.all(promises)
+          .then((results) => {
+            const skipCount = results.reduce((a, b) => a + b, 0);
+            console.log(` * Finished scan. Skipped ${skipCount} folders already in database.`);
+            db.knex.destroy();
           })
           .catch((err) => {
             console.error(` ! ERROR while performing scan: ${err}`);
+            process.exit(1);
           });
       })
       .catch((err) => {
         console.error(` ! ERROR while creating schema: ${err}`);
+        process.exit(1);
       });
   });
 };
