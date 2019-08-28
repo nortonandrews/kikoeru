@@ -118,7 +118,7 @@ const getWorkMetadata = id => new Promise((resolve, reject) => {
  * @param {*} tags Array of tag ids to check.
  * @param {*} vas Array of VA ids to check.
  */
-const cleanupOrphans = (trx, circle, tags, vas) => new Promise((resolve, reject) => {
+const cleanupOrphans = (trx, circle, tags, vas) => new Promise(async (resolve, reject) => {
   const getCount = (tableName, colName, colValue) => new Promise((resolveCount, rejectCount) => {
     trx(tableName)
       .select(colName)
@@ -146,25 +146,35 @@ const cleanupOrphans = (trx, circle, tags, vas) => new Promise((resolve, reject)
       });
   }));
 
-  tags.map(tag => promises.push(getCount('r_tag_work', 'tag_id', tag)
-    .then((count) => {
-      if (count === 0) {
+  for (let i = 0; i < tags.length; i += 1) {
+    const tag = tags[i];
+
+    // eslint-disable-next-line no-await-in-loop
+    const count = await getCount('r_tag_work', 'tag_id', tag);
+
+    if (count === 0) {
+      promises.push(
         trx('t_tag')
           .delete()
-          .where('id', '=', tag)
-          .then();
-      }
-    })));
+          .where('id', '=', tag),
+      );
+    }
+  }
 
-  vas.map(va => promises.push(getCount('r_va_work', 'va_id', va)
-    .then((count) => {
-      if (count === 0) {
+  for (let i = 0; i < vas.length; i += 1) {
+    const va = vas[i];
+
+    // eslint-disable-next-line no-await-in-loop
+    const count = await getCount('r_va_work', 'va_id', va);
+
+    if (count === 0) {
+      promises.push(
         trx('t_va')
           .delete()
-          .where('id', '=', va)
-          .then();
-      }
-    })));
+          .where('id', '=', va),
+      );
+    }
+  }
 
   Promise.all(promises)
     .then((results) => {
