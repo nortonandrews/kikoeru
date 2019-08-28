@@ -34,7 +34,7 @@ app.get(/^\/(player|work|circle|tag|va)s?\/(\d+)?$/, (req, res, next) => {
 app.use(express.static('dist'));
 
 // If 404'd, serve from 'static' folder
-app.use(express.static('static'));
+app.use('/static', express.static('static'));
 
 // Expose API routes
 app.use('/api', routes);

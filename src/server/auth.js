@@ -20,6 +20,7 @@ router.post('/', (req, res, next) => {
 const authenticator = (req, res, next) => {
   if (req.path === '/auth/'
     || req.path === '/main.css'
+    || req.path.indexOf('/static/') === 0
     || req.session.auth
     || !config.password
   ) {
