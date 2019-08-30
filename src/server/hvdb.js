@@ -29,6 +29,13 @@ const scrapeWorkMetadata = id => new Promise((resolve, reject) => {
   const url = `https://hvdb.me/Dashboard/WorkDetails/${id}`;
 
   fetch(url)
+    .then((res) => {
+      if (!res.ok) {
+        reject(new Error(`Couldn't fetch work page HTML, received ${res.statusText}`));
+      }
+
+      return res;
+    })
     .then(res => res.text())
     .then((res) => {
       const work = { id, tags: [], vas: [] };

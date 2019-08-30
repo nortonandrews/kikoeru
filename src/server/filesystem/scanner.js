@@ -52,7 +52,7 @@ const processFolder = (id, folder) => db.knex('t_work')
               .then(() => console.log(` -> [RJ${rjcode}] Cover image downloaded!`));
           })
           .catch((err) => {
-            console.log(`  ! [RJ${rjcode}] Failed to download cover image: ${err}`);
+            console.log(`  ! [RJ${rjcode}] Failed to download cover image: ${err.message}`);
           });
 
         // eslint-disable-next-line no-param-reassign
@@ -62,7 +62,7 @@ const processFolder = (id, folder) => db.knex('t_work')
           .then(() => 0);
       })
       .catch((err) => {
-        console.log(`  ! [RJ${rjcode}] Failed to fetch metadata from HVDB: ${err}`);
+        console.log(`  ! [RJ${rjcode}] Failed to fetch metadata from HVDB: ${err.message}`);
         return 0;
       });
   });
@@ -95,14 +95,14 @@ const performCleanup = () => {
 const performScan = () => {
   fs.mkdir(path.join(config.rootDir, 'Images'), (direrr) => {
     if (direrr && direrr.code !== 'EEXIST') {
-      console.error(` ! ERROR while trying to create Images folder: ${direrr}`);
+      console.error(` ! ERROR while trying to create Images folder: ${direrr.code}`);
       process.exit(1);
     }
 
     createSchema()
       .then(() => performCleanup())
       .catch((err) => {
-        console.error(` ! ERROR while performing cleanup: ${err}`);
+        console.error(` ! ERROR while performing cleanup: ${err.message}`);
         process.exit(1);
       })
       .then(async () => {
@@ -115,7 +115,7 @@ const performScan = () => {
             promises.push(processFolder(id, folder));
           }
         } catch (err) {
-          console.error(` ! ERROR while trying to get folder list: ${err}`);
+          console.error(` ! ERROR while trying to get folder list: ${err.message}`);
           process.exit(1);
         }
 
@@ -126,12 +126,12 @@ const performScan = () => {
             db.knex.destroy();
           })
           .catch((err) => {
-            console.error(` ! ERROR while performing scan: ${err}`);
+            console.error(` ! ERROR while performing scan: ${err.message}`);
             process.exit(1);
           });
       })
       .catch((err) => {
-        console.error(` ! ERROR while creating schema: ${err}`);
+        console.error(` ! ERROR while creating database schema: ${err.message}`);
         process.exit(1);
       });
   });
