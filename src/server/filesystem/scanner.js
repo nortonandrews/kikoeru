@@ -44,13 +44,15 @@ const processFolder = (id, folder) => db.knex('t_work')
             if (!imageRes.ok) {
               throw new Error(imageRes.statusText);
             }
+
+            return imageRes;
           })
           .then((imageRes) => {
             saveCoverImageToDisk(imageRes.body, rjcode)
               .then(() => console.log(` -> [RJ${rjcode}] Cover image downloaded!`));
           })
-          .catch(() => {
-            console.log(`  ! [RJ${rjcode}] Failed to download cover image.`);
+          .catch((err) => {
+            console.log(`  ! [RJ${rjcode}] Failed to download cover image: ${err}`);
           });
 
         // eslint-disable-next-line no-param-reassign
