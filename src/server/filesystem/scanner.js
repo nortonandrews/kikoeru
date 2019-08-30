@@ -24,7 +24,7 @@ const processFolder = (id, folder) => db.knex('t_work')
     if (count) {
       // Already in database.
       // console.log(` * ${folder} already in database, skipping.`);
-      return 1;
+      return 'skipped';
     }
 
     // New folder.
@@ -59,11 +59,11 @@ const processFolder = (id, folder) => db.knex('t_work')
         metadata.dir = folder;
         return db.insertWorkMetadata(metadata)
           .then(console.log(` -> [RJ${rjcode}] Finished adding to the database!`))
-          .then(() => 0);
+          .then(() => 'added');
       })
       .catch((err) => {
         console.log(`  ! [RJ${rjcode}] Failed to fetch metadata from HVDB: ${err.message}`);
-        return 0;
+        return 'failed';
       });
   });
 
@@ -121,8 +121,16 @@ const performScan = () => {
 
         Promise.all(promises)
           .then((results) => {
-            const skipCount = results.reduce((a, b) => a + b, 0);
-            console.log(` * Finished scan. Skipped ${skipCount} folders already in database.`);
+            const counts = {
+              added: 0,
+              failed: 0,
+              skipped: 0,
+            };
+
+            // eslint-disable-next-line no-return-assign
+            results.forEach(x => counts[x] += 1);
+
+            console.log(` * Finished scan. Added ${counts.added}, skipped ${counts.skipped} and failed to add ${counts.failed} works.`);
             db.knex.destroy();
           })
           .catch((err) => {
