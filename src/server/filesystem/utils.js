@@ -49,19 +49,25 @@ const getTrackList = (id, dir) => recursiveReaddir(
 /**
  * Returns list of directory names (relative) that contain an RJ code.
  */
-const getFolderList = () => new Promise((resolve, reject) => {
-  fs.readdir(config.rootDir, (err, folders) => {
-    if (err) {
-      return reject(err);
-    }
+async function* getFolderList(current = '', depth = 0) {
+  const folders = await fs.promises.readdir(path.join(config.rootDir, current));
 
-    if (!folders) {
-      return reject(new Error(`Could not read from ${config.rootDir}`));
-    }
+  for (const folder of folders) {
+    const absolutePath = path.resolve(config.rootDir, current, folder);
+    const relativePath = path.join(current, folder);
 
-    return resolve(folders.filter(folder => folder.match(/RJ\d{6}/)));
-  });
-});
+    // eslint-disable-next-line no-await-in-loop
+    if ((await fs.promises.stat(absolutePath)).isDirectory()) {
+      if (folder.match(/RJ\d{6}/)) {
+        // Found a work folder, don't go any deeper.
+        yield relativePath;
+      } else if (depth + 1 < config.scannerMaxRecursionDepth) {
+        // Found a folder that's not a work folder, go inside if allowed.
+        yield* getFolderList(relativePath, depth + 1);
+      }
+    }
+  }
+}
 
 /**
  * Deletes a work's cover image from disk.

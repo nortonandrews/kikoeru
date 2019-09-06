@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/static/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/static/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/static/favicon-16x16.png">
+  <link rel="manifest" href="/static/manifest.json">
+  <link rel="stylesheet" href="/main.css">
+
+  <title>Kikoeru</title>
+</head>
+
+<body>
+  <div class="uk-container uk-container-small">
+    <div class="uk-position-center">
+      <p class="k-logo uk-text-center" style="font-size: 8em !important;"></p>
+      <p class="uk-text-muted uk-text-center">Please authenticate.</p>
+
+      <form action="/auth/" method="POST">
+        <fieldset class="uk-fieldset">
+          <div class="uk-margin">
+            <input class="uk-input" type="password" name="password">
+          </div>
+
+          <button class="uk-button uk-button-primary uk-width-1">Authenticate</button>
+        </fieldset>
+      </form>
+    </div>
+  </div>
+</body>
+
+</html>

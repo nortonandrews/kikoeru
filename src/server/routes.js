@@ -13,7 +13,11 @@ router.get('/cover/:id', (req, res, next) => {
   const rjcode = (`000000${req.params.id}`).slice(-6);
   res.sendFile(path.join(config.rootDir, 'Images', `RJ${rjcode}.jpg`), (err) => {
     if (err) {
-      next(err);
+      res.sendFile(path.join(__dirname, '..', '..', 'static', 'no-image.jpg'), (err2) => {
+        if (err2) {
+          next(err2);
+        }
+      });
     }
   });
 });

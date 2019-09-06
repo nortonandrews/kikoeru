@@ -24,7 +24,7 @@ const processFolder = (id, folder) => db.knex('t_work')
     if (count) {
       // Already in database.
       // console.log(` * ${folder} already in database, skipping.`);
-      return 1;
+      return 'skipped';
     }
 
     // New folder.
@@ -41,15 +41,29 @@ const processFolder = (id, folder) => db.knex('t_work')
         console.log(` -> [RJ${rjcode}] Downloading cover image...`);
         fetch(`https://hvdb.me/WorkImages/RJ${rjcode}.jpg`)
           .then((imageRes) => {
+            if (!imageRes.ok) {
+              throw new Error(imageRes.statusText);
+            }
+
+            return imageRes;
+          })
+          .then((imageRes) => {
             saveCoverImageToDisk(imageRes.body, rjcode)
               .then(() => console.log(` -> [RJ${rjcode}] Cover image downloaded!`));
+          })
+          .catch((err) => {
+            console.log(`  ! [RJ${rjcode}] Failed to download cover image: ${err.message}`);
           });
 
         // eslint-disable-next-line no-param-reassign
         metadata.dir = folder;
         return db.insertWorkMetadata(metadata)
-          .then(console.log(` -> Finished adding RJ${rjcode}!`))
-          .then(() => 0);
+          .then(console.log(` -> [RJ${rjcode}] Finished adding to the database!`))
+          .then(() => 'added');
+      })
+      .catch((err) => {
+        console.log(`  ! [RJ${rjcode}] Failed to fetch metadata from HVDB: ${err.message}`);
+        return 'failed';
       });
   });
 
@@ -65,6 +79,7 @@ const performCleanup = () => {
             .then((result) => {
               const rjcode = (`000000${work.id}`).slice(-6); // zero-pad to 6 digits
               deleteCoverImageFromDisk(rjcode)
+                .catch(() => console.log(` -> [RJ${rjcode}] Failed to delete cover image.`))
                 .then(() => resolve(result));
             })
             .catch(err => reject(err));
@@ -80,43 +95,52 @@ const performCleanup = () => {
 const performScan = () => {
   fs.mkdir(path.join(config.rootDir, 'Images'), (direrr) => {
     if (direrr && direrr.code !== 'EEXIST') {
-      console.error(` ! ERROR while trying to create Images folder: ${direrr}`);
-      return;
+      console.error(` ! ERROR while trying to create Images folder: ${direrr.code}`);
+      process.exit(1);
     }
 
     createSchema()
-      .then(() => {
-        console.log(' * Starting scan...');
+      .then(() => performCleanup())
+      .catch((err) => {
+        console.error(` ! ERROR while performing cleanup: ${err.message}`);
+        process.exit(1);
+      })
+      .then(async () => {
+        console.log(' * Finished cleanup. Starting scan...');
+        const promises = [];
 
-        getFolderList()
-          .then((folders) => {
-            const promises = [];
+        try {
+          for await (const folder of getFolderList()) {
+            const id = folder.match(/RJ(\d{6})/)[1];
+            promises.push(processFolder(id, folder));
+          }
+        } catch (err) {
+          console.error(` ! ERROR while trying to get folder list: ${err.message}`);
+          process.exit(1);
+        }
 
-            for (let i = 0; i < folders.length; i += 1) {
-              const folder = folders[i];
-              const id = folder.match(/RJ(\d{6})/)[1];
+        Promise.all(promises)
+          .then((results) => {
+            const counts = {
+              added: 0,
+              failed: 0,
+              skipped: 0,
+            };
 
-              promises.push(processFolder(id, folder));
-            }
+            // eslint-disable-next-line no-return-assign
+            results.forEach(x => counts[x] += 1);
 
-            Promise.all(promises)
-              .then((results) => {
-                const skipCount = results.reduce((a, b) => a + b, 0);
-                console.log(` * Finished scan. Skipped ${skipCount} folders already in database.`);
-                performCleanup()
-                  .then(() => {
-                    console.log(' * Finished cleanup.');
-                    db.knex.destroy();
-                  })
-                  .catch(err => console.error(` ! ERROR while performing cleanup: ${err}`));
-              });
+            console.log(` * Finished scan. Added ${counts.added}, skipped ${counts.skipped} and failed to add ${counts.failed} works.`);
+            db.knex.destroy();
           })
           .catch((err) => {
-            console.error(` ! ERROR while performing scan: ${err}`);
+            console.error(` ! ERROR while performing scan: ${err.message}`);
+            process.exit(1);
           });
       })
       .catch((err) => {
-        console.error(` ! ERROR while creating schema: ${err}`);
+        console.error(` ! ERROR while creating database schema: ${err.message}`);
+        process.exit(1);
       });
   });
 };
