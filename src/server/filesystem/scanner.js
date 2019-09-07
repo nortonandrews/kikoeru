@@ -3,7 +3,7 @@ const fs = require('fs');
 const path = require('path');
 const fetch = require('node-fetch');
 const db = require('../database/db');
-const { getFolderList, deleteCoverImageFromDisk, saveCoverImageToDisk } = require('./utils');
+const { getFolderList, deleteCoverImageFromDisk, saveCoverImageToDisk, throttlePromises } = require('./utils');
 const { createSchema } = require('../database/schema');
 const scrapeWorkMetadata = require('../hvdb');
 
@@ -112,14 +112,15 @@ const performScan = () => {
         try {
           for await (const folder of getFolderList()) {
             const id = folder.match(/RJ(\d{6})/)[1];
-            promises.push(processFolder(id, folder));
+            promises.push(() => processFolder(id, folder));
+            
           }
         } catch (err) {
           console.error(` ! ERROR while trying to get folder list: ${err.message}`);
           process.exit(1);
         }
 
-        Promise.all(promises)
+        throttlePromises(config.maxParallelism, promises)
           .then((results) => {
             const counts = {
               added: 0,
