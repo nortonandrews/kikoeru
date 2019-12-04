@@ -19,7 +19,7 @@ const getTrackList = (id, dir) => recursiveReaddir(
     const filteredFiles = files.filter((file) => {
       const ext = path.extname(file);
 
-      return (ext === '.mp3' || ext === '.ogg' || ext === '.opus' || ext === '.wav' || ext === '.flac');
+      return (ext === '.mp3' || ext === '.ogg' || ext === '.opus' || ext === '.wav' || ext === '.flac' || ext === '.webm' || ext === '.mp4');
     });
 
     // Sort by folder and title
