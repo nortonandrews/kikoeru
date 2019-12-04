@@ -8,8 +8,10 @@ class List extends Component {
   constructor(props) {
     super(props);
 
+    this.onFilter = this.onFilter.bind(this);
     this.state = {
       items: null,
+      filteredItems: null,
     };
   }
 
@@ -26,9 +28,20 @@ class List extends Component {
       });
   }
 
+  onFilter(evt) {
+    evt.preventDefault();
+    const data = new FormData(evt.target);
+    const { items } = this.state;
+
+    this.setState({
+      items,
+      filteredItems: items.filter(x => x.name.toLowerCase().indexOf(data.get('filter_str').toLowerCase()) !== -1),
+    });
+  }
+
   render() {
     const { restrict } = this.props;
-    const { items } = this.state;
+    const { items, filteredItems } = this.state;
 
     if (!items) {
       return (
@@ -38,7 +51,8 @@ class List extends Component {
       );
     }
 
-    const elementList = items.map(item => (
+    const visibleItems = filteredItems || items;
+    const elementList = visibleItems.map(item => (
       <Link
         to={`/${restrict}/${item.id}`}
         className="uk-button uk-button-default uk-width-1 uk-margin-small-bottom"
@@ -50,6 +64,9 @@ class List extends Component {
     return (
       <div className="uk-container">
         <h2 className="uk-margin-top">All {restrict}s</h2>
+        <form onSubmit={this.onFilter}>
+          <input name="filter_str" className="uk-input uk-width-1" type="text" placeholder={`Search for a ${restrict}...`} />
+        </form>
         <div className="uk-align-center">
           {elementList}
         </div>
