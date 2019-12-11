@@ -153,7 +153,7 @@
 .k-player-seekbar input[type="range"] {
     -webkit-appearance: none;
     width: calc(100% + 0px);
-    overflow-x: hidden;
+    overflow: hidden;
     height: 32px;
     margin: 0;
     padding: 0;

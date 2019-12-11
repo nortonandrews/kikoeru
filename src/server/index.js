@@ -43,7 +43,7 @@ app.use('/api', routes);
 app.use('/auth', authRoutes);
 
 // Start server
-app.listen(process.env.PORT || 8888, () => {
+const listener = app.listen(process.env.PORT || 0, () => {
   // eslint-disable-next-line no-console
-  console.log(`Express listening on http://localhost:${process.env.PORT || 8888}`);
+  console.log(`Express listening on http://localhost:${listener.address().port}`);
 });
