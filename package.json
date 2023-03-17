@@ -19,7 +19,7 @@
     "express": "^4.17.1",
     "express-session": "^1.16.2",
     "htmlparser2": "^3.10.1",
-    "knex": "^0.19.5",
+    "knex": "^2.4.2",
     "memorystore": "^1.6.1",
     "natural-orderby": "^2.0.3",
     "node-fetch": "^2.6.0",
