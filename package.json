@@ -57,7 +57,7 @@
     "inferno-router": "^7",
     "less-loader": "^5.0.0",
     "mini-css-extract-plugin": "^0.7.0",
-    "nodemon": "^1.19.1",
+    "nodemon": "^2.0.21",
     "optimize-css-assets-webpack-plugin": "^5.0.3",
     "redux-starter-kit": "^0.5.1",
     "style-loader": "^0.23.1",
