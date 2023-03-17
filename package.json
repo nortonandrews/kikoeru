@@ -22,7 +22,7 @@
     "knex": "^2.4.2",
     "memorystore": "^1.6.1",
     "natural-orderby": "^2.0.3",
-    "node-fetch": "^2.6.0",
+    "node-fetch": "^2.6.7",
     "recursive-readdir": "^2.2.3",
     "sqlite3": "^4.0.9"
   },
