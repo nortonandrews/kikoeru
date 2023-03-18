@@ -41,7 +41,7 @@
     "babel-plugin-inferno": "^6.0.5",
     "babel-polyfill": "^6.26.0",
     "clean-webpack-plugin": "^3.0.0",
-    "concurrently": "^4.1.1",
+    "concurrently": "^7.6.0",
     "css-loader": "^3.0.0",
     "eslint": "^6.0.1",
     "eslint-config-airbnb": "^17.1.1",
