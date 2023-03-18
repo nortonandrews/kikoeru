@@ -27,7 +27,7 @@
     "sqlite3": "^4.0.9"
   },
   "devDependencies": {
-    "history": "^4.9.0",
+    "history": "^4.10.1",
     "inferno": "^7",
     "less": "^3.13.1",
     "redux": "^4.0.4",
