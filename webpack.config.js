@@ -1,5 +1,5 @@
 const path = require('path');
-const OptimizeCssAssetsPlugin = require('optimize-css-assets-webpack-plugin');
+const CssMinimizerPlugin = require('css-minimizer-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
@@ -60,7 +60,6 @@ module.exports = {
     },
   },
   plugins: [
-    new OptimizeCssAssetsPlugin(),
     new MiniCssExtractPlugin(),
     new CleanWebpackPlugin(),
     new HtmlWebpackPlugin({
@@ -68,6 +67,9 @@ module.exports = {
     }),
   ],
   optimization: {
+    minimizer: [
+      new CssMinimizerPlugin(),
+    ],
     mangleWasmImports: true,
     splitChunks: {
       chunks: 'async',
