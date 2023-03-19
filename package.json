@@ -43,7 +43,7 @@
     "clean-webpack-plugin": "^4.0.0",
     "concurrently": "^7.6.0",
     "css-loader": "^5.2.7",
-    "eslint": "^6.8.0",
+    "eslint": "^8.36.0",
     "eslint-config-airbnb": "^17.1.1",
     "eslint-config-inferno-app": "^7.0.2",
     "eslint-plugin-import": "^2.27.5",
