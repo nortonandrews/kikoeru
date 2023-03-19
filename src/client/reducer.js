@@ -1,5 +1,5 @@
 /* eslint-disable no-param-reassign */
-import { createReducer } from 'redux-starter-kit';
+import { createReducer } from '@reduxjs/toolkit';
 
 const initialState = {
   playing: false, // playing or paused
