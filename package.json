@@ -62,7 +62,7 @@
     "redux-starter-kit": "^2.0.0",
     "style-loader": "^2.0.0",
     "url-loader": "^4.1.1",
-    "webpack": "^4.46.0",
+    "webpack": "^5.76.2",
     "webpack-cli": "^4.10.0",
     "webpack-dev-server": "^4.13.1"
   }
