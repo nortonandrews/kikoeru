@@ -17,7 +17,7 @@
   "dependencies": {
     "cross-env": "^7.0.3",
     "express": "^4.18.2",
-    "express-session": "^1.16.2",
+    "express-session": "^1.17.3",
     "htmlparser2": "^8.0.1",
     "knex": "^2.4.2",
     "memorystore": "^1.6.1",
