@@ -10,7 +10,8 @@
     "server": "nodemon src/server/index.js",
     "dev": "concurrently \"npm run server\" \"npm run client\"",
     "profile": "webpack --mode production --profile --json > webpack-stats.json",
-    "scan": "node ./src/server/filesystem/scanner.js"
+    "scan": "node ./src/server/filesystem/scanner.js",
+    "lint": "eslint --ignore-path .gitignore --fix ./**/*.js"
   },
   "author": "nortonandrews",
   "license": "GPL-3.0-or-later",
