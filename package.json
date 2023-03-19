@@ -60,7 +60,7 @@
     "nodemon": "^2.0.21",
     "optimize-css-assets-webpack-plugin": "^6.0.1",
     "redux-starter-kit": "^2.0.0",
-    "style-loader": "^0.23.1",
+    "style-loader": "^2.0.0",
     "url-loader": "^4.1.1",
     "webpack": "^4.35.3",
     "webpack-cli": "^4.10.0",
