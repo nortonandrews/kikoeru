@@ -24,17 +24,21 @@ module.exports = {
     {
       test: /\.(css|less)$/,
       use: [
-        {
-          loader: MiniCssExtractPlugin.loader,
-          options: { hmr: !production },
-        },
+        MiniCssExtractPlugin.loader,
         'css-loader',
         'less-loader',
       ],
     },
     {
       test: /\.(png|woff|woff2|eot|ttf|svg)$/,
-      loader: 'url-loader?limit=100000',
+      use: [
+        {
+          loader: 'url-loader',
+          options: {
+            limit: 100000,
+          },
+        },
+      ],
     },
     ],
   },
