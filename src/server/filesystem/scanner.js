@@ -3,7 +3,9 @@ const fs = require('fs');
 const path = require('path');
 const fetch = require('node-fetch');
 const db = require('../database/db');
-const { getFolderList, deleteCoverImageFromDisk, saveCoverImageToDisk, throttlePromises } = require('./utils');
+const {
+  getFolderList, deleteCoverImageFromDisk, saveCoverImageToDisk, throttlePromises,
+} = require('./utils');
 const { createSchema } = require('../database/schema');
 const scrapeWorkMetadata = require('../hvdb');
 
@@ -61,7 +63,7 @@ const processFolder = (id, folder) => db.knex('t_work')
         // eslint-disable-next-line no-param-reassign
         metadata.dir = folder;
         return db.insertWorkMetadata(metadata)
-          .then(console.log(` -> [RJ${rjcode}] Finished adding to the database!`))
+          .then(() => console.log(` -> [RJ${rjcode}] Finished adding to the database!`))
           .then(() => 'added');
       })
       .catch((err) => {
@@ -75,7 +77,7 @@ const performCleanup = () => {
   return db.knex('t_work')
     .select('id', 'dir')
     .then((works) => {
-      const promises = works.map(work => new Promise((resolve, reject) => {
+      const promises = works.map((work) => new Promise((resolve, reject) => {
         if (!fs.existsSync(path.join(config.rootDir, work.dir))) {
           console.warn(` ! ${work.dir} is missing from filesystem. Removing from database...`);
           db.removeWork(work.id)
@@ -85,7 +87,7 @@ const performCleanup = () => {
                 .catch(() => console.log(` -> [RJ${rjcode}] Failed to delete cover image.`))
                 .then(() => resolve(result));
             })
-            .catch(err => reject(err));
+            .catch((err) => reject(err));
         } else {
           resolve();
         }
@@ -131,7 +133,7 @@ const performScan = () => {
             };
 
             // eslint-disable-next-line no-return-assign
-            results.forEach(x => counts[x] += 1);
+            results.forEach((x) => counts[x] += 1);
 
             console.log(` * Finished scan. Added ${counts.added}, skipped ${counts.skipped} and failed to add ${counts.failed} works.`);
             db.knex.destroy();

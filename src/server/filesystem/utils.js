@@ -31,7 +31,7 @@ const getTrackList = (id, dir) => recursiveReaddir(
         title: path.basename(file),
         subtitle: dirName === '.' ? null : dirName,
       };
-    }), [v => v.subtitle, v => v.title]);
+    }), [(v) => v.subtitle, (v) => v.title]);
 
     // Add hash to each file
     const sortedHashedFiles = sortedFiles.map(
@@ -73,7 +73,7 @@ async function* getFolderList(current = '', depth = 0) {
  * Deletes a work's cover image from disk.
  * @param {String} rjcode Work RJ code (only the 6 digits, zero-padded).
  */
-const deleteCoverImageFromDisk = rjcode => new Promise((resolve, reject) => {
+const deleteCoverImageFromDisk = (rjcode) => new Promise((resolve, reject) => {
   fs.unlink(path.join(config.rootDir, 'Images', `RJ${rjcode}.jpg`), (err) => {
     if (err) {
       reject(err);
@@ -102,37 +102,36 @@ const saveCoverImageToDisk = (stream, rjcode) => new Promise((resolve, reject) =
 
 /**
  * Runs an array of Promise returning functions at a specified rate
- * @param {Number} the maximum number of unresolved promises that may exist at a given time
- * @param {Array<Function>} an array of promise-creating functions 
+ * @param {Number} maxPending the maximum number of unresolved promises
+ * that may exist at a given time
+ * @param {Array<Function>} asyncFuncs an array of promise-creating functions
 */
-const throttlePromises = (maxPending, asyncFuncs) => {
-  return new Promise((resolve, reject) => {
-      let numPending = 0;
-      let nextFuncId = 0;
-      const promisedValues = [];
-      (function check() {
-          if (nextFuncId >= asyncFuncs.length) { // All promises created
-              if (numPending == 0) resolve(promisedValues); // All promises fulfilled
-              return;
-          }
-          while (numPending < maxPending) { // Room for creating promise(s)
-              numPending++;
-              const thisFuncId = nextFuncId++;
-              asyncFuncs[thisFuncId]().then(value => {
-                  promisedValues[thisFuncId] = value;
-                  numPending--;
-                  check();
-              }).catch(reject);
-          }
-      })();
-  });
-};
-
+const throttlePromises = (maxPending, asyncFuncs) => new Promise((resolve, reject) => {
+  let numPending = 0;
+  let nextFuncId = 0;
+  const promisedValues = [];
+  (function check() {
+    if (nextFuncId >= asyncFuncs.length) { // All promises created
+      if (numPending === 0) resolve(promisedValues); // All promises fulfilled
+      return;
+    }
+    while (numPending < maxPending) { // Room for creating promise(s)
+      numPending += 1;
+      nextFuncId += 1;
+      const thisFuncId = nextFuncId;
+      asyncFuncs[thisFuncId]().then((value) => {
+        promisedValues[thisFuncId] = value;
+        numPending -= 1;
+        check();
+      }).catch(reject);
+    }
+  }());
+});
 
 module.exports = {
   getTrackList,
   getFolderList,
   deleteCoverImageFromDisk,
   saveCoverImageToDisk,
-  throttlePromises
+  throttlePromises,
 };

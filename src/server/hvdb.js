@@ -25,7 +25,7 @@ const hashNameIntoInt = (name) => {
  * Scrapes work metadata from public HVDB page HTML.
  * @param {Integer} id Work id.
  */
-const scrapeWorkMetadata = id => new Promise((resolve, reject) => {
+const scrapeWorkMetadata = (id) => new Promise((resolve, reject) => {
   const url = `https://hvdb.me/Dashboard/WorkDetails/${id}`;
 
   fetch(url)
@@ -36,7 +36,7 @@ const scrapeWorkMetadata = id => new Promise((resolve, reject) => {
 
       return res;
     })
-    .then(res => res.text())
+    .then((res) => res.text())
     .then((res) => {
       const work = { id, tags: [], vas: [] };
       let writeTo;

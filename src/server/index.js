@@ -26,7 +26,7 @@ app.use(session({
 app.use(authenticator);
 
 // Serve webapp routes
-app.get(/^\/(player|work|circle|tag|va)s?\/(\d+)?$/, (req, res, next) => {
+app.get(/^\/(player|work|circle|tag|va)s?\/(\d+)?$/, (req, res) => {
   res.sendFile(path.join(__dirname, '../../dist', 'index.html'));
 });
 
