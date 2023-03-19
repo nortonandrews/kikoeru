@@ -29,7 +29,10 @@ const processFolder = (id, folder) => db.knex('t_work')
 
     // New folder.
     console.log(` * Found new folder: ${folder}`);
-    const rjcode = (`000000${id}`).slice(-6); // zero-pad to 6 digits
+    const rjcode = ((workid) => {
+      const code = workid.startsWith('RJ') ? workid.slice(2) : workid;
+      return code.length <= 6 ? code.padStart(6, '0') : code.padStart(8, '0');
+    })(id);
 
     console.log(` -> [RJ${rjcode}] Fetching metadata from HVDB...`);
     return scrapeWorkMetadata(id)
@@ -111,9 +114,8 @@ const performScan = () => {
 
         try {
           for await (const folder of getFolderList()) {
-            const id = folder.match(/RJ(\d{6})/)[1];
+            const id = folder.match(/RJ(\d{6,8})/)[1];
             promises.push(() => processFolder(id, folder));
-            
           }
         } catch (err) {
           console.error(` ! ERROR while trying to get folder list: ${err.message}`);
