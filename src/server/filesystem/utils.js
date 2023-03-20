@@ -2,6 +2,7 @@ const fs = require('fs');
 const path = require('path');
 const recursiveReaddir = require('recursive-readdir');
 const { orderBy } = require('natural-orderby');
+const { PromisePool } = require('@supercharge/promise-pool');
 
 const config = require('../../../config.json');
 
@@ -106,27 +107,17 @@ const saveCoverImageToDisk = (stream, rjcode) => new Promise((resolve, reject) =
  * that may exist at a given time
  * @param {Array<Function>} asyncFuncs an array of promise-creating functions
 */
-const throttlePromises = (maxPending, asyncFuncs) => new Promise((resolve, reject) => {
-  let numPending = 0;
-  let nextFuncId = 0;
+const throttlePromises = (maxPending, asyncFuncs) => {
   const promisedValues = [];
-  (function check() {
-    if (nextFuncId >= asyncFuncs.length) { // All promises created
-      if (numPending === 0) resolve(promisedValues); // All promises fulfilled
-      return;
-    }
-    while (numPending < maxPending) { // Room for creating promise(s)
-      numPending += 1;
-      nextFuncId += 1;
-      const thisFuncId = nextFuncId;
-      asyncFuncs[thisFuncId]().then((value) => {
-        promisedValues[thisFuncId] = value;
-        numPending -= 1;
-        check();
-      }).catch(reject);
-    }
-  }());
-});
+  return PromisePool
+    .withConcurrency(maxPending)
+    .for(asyncFuncs)
+    .process(
+      async (func, index) => func().then((value) => {
+        promisedValues[index] = value;
+      }),
+    ).then(() => promisedValues);
+};
 
 module.exports = {
   getTrackList,
