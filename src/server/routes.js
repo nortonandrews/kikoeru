@@ -2,7 +2,7 @@ const path = require('path');
 const express = require('express');
 
 const db = require('./database/db');
-const { getTrackList } = require('./filesystem/utils');
+const { getTrackList, parseRjcode } = require('./filesystem/utils');
 
 const config = require('../../config.json');
 
@@ -10,7 +10,7 @@ const router = express.Router();
 
 // GET work cover image
 router.get('/cover/:id', (req, res, next) => {
-  const rjcode = (`000000${req.params.id}`).slice(-6);
+  const rjcode = parseRjcode(req.params.id);
   res.sendFile(path.join(config.rootDir, 'Images', `RJ${rjcode}.jpg`), (err) => {
     if (err) {
       res.sendFile(path.join(__dirname, '..', '..', 'static', 'no-image.jpg'), (err2) => {

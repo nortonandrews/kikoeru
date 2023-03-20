@@ -3,11 +3,16 @@ const fs = require('fs');
 const path = require('path');
 const fetch = require('node-fetch');
 const db = require('../database/db');
-const {
-  getFolderList, deleteCoverImageFromDisk, saveCoverImageToDisk, throttlePromises,
-} = require('./utils');
 const { createSchema } = require('../database/schema');
 const scrapeWorkMetadata = require('../hvdb');
+const {
+  getFolderList,
+  deleteCoverImageFromDisk,
+  saveCoverImageToDisk,
+  throttlePromises,
+  parseRjcode,
+  RJCODE_REGEX,
+} = require('./utils');
 
 const config = require('../../../config.json');
 
@@ -31,10 +36,7 @@ const processFolder = (id, folder) => db.knex('t_work')
 
     // New folder.
     console.log(` * Found new folder: ${folder}`);
-    const rjcode = ((workid) => {
-      const code = workid.startsWith('RJ') ? workid.slice(2) : workid;
-      return code.length <= 6 ? code.padStart(6, '0') : code.padStart(8, '0');
-    })(id);
+    const rjcode = parseRjcode(id);
 
     console.log(` -> [RJ${rjcode}] Fetching metadata from HVDB...`);
     return scrapeWorkMetadata(id)
@@ -82,7 +84,7 @@ const performCleanup = () => {
           console.warn(` ! ${work.dir} is missing from filesystem. Removing from database...`);
           db.removeWork(work.id)
             .then((result) => {
-              const rjcode = (`000000${work.id}`).slice(-6); // zero-pad to 6 digits
+              const rjcode = parseRjcode(work.id);
               deleteCoverImageFromDisk(rjcode)
                 .catch(() => console.log(` -> [RJ${rjcode}] Failed to delete cover image.`))
                 .then(() => resolve(result));
@@ -116,7 +118,7 @@ const performScan = () => {
 
         try {
           for await (const folder of getFolderList()) {
-            const id = folder.match(/RJ(\d{6,8})/)[1];
+            const id = folder.match(RJCODE_REGEX)[1];
             promises.push(() => processFolder(id, folder));
           }
         } catch (err) {

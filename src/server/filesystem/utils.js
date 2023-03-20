@@ -6,6 +6,8 @@ const { PromisePool } = require('@supercharge/promise-pool');
 
 const config = require('../../../config.json');
 
+const RJCODE_REGEX = /R[JE]\d{6,8}/;
+
 /**
  * Returns list of playable tracks in a given folder. Track is an object
  * containing 'title', 'subtitle' and 'hash'.
@@ -59,7 +61,7 @@ async function* getFolderList(current = '', depth = 0) {
 
     // eslint-disable-next-line no-await-in-loop
     if ((await fs.promises.stat(absolutePath)).isDirectory()) {
-      if (folder.match(/RJ\d{6}/)) {
+      if (folder.match(RJCODE_REGEX)) {
         // Found a work folder, don't go any deeper.
         yield relativePath;
       } else if (depth + 1 < config.scannerMaxRecursionDepth) {
@@ -119,10 +121,22 @@ const throttlePromises = (maxPending, asyncFuncs) => {
     ).then(() => promisedValues);
 };
 
+/**
+ * Parses an RJ code string and returns the numeric identifier
+ * @param {string} workid The work id the parse, valid values e.g. 123, RJ123, RJ1234567
+ * @returns {Number} The numeric identifier for this work padded to the correct length
+ */
+const parseRjcode = (workid) => {
+  const code = workid.startsWith('RJ') ? workid.slice(2) : workid;
+  return code.length <= 6 ? code.padStart(6, '0') : code.padStart(8, '0');
+};
+
 module.exports = {
   getTrackList,
   getFolderList,
   deleteCoverImageFromDisk,
   saveCoverImageToDisk,
   throttlePromises,
+  parseRjcode,
+  RJCODE_REGEX,
 };
