@@ -60,7 +60,7 @@ router.get('/stream/:id/:index', (req, res, next) => {
 
 // GET list of work ids
 router.get('/works/:fromId?', (req, res, next) => {
-  db.paginateResults(db.getWorksBy(), req.params.fromId || 999999, config.worksPerPage)
+  db.paginateResults(db.getWorksBy(), req.params.fromId || 99999999, config.worksPerPage)
     .then((results) => res.send(results))
     .catch((err) => next(err));
 });
@@ -83,7 +83,7 @@ router.get('/get-name/:field/:id', (req, res, next) => {
 router.get('/:field/:id/:fromId?', (req, res, next) => {
   db.paginateResults(
     db.getWorksBy(req.params.id, req.params.field),
-    req.params.fromId || 999999,
+    req.params.fromId || 99999999,
     config.worksPerPage,
   )
     .then((results) => res.send(results))
