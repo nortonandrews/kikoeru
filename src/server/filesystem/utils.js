@@ -6,7 +6,7 @@ const { PromisePool } = require('@supercharge/promise-pool');
 
 const config = require('../../../config.json');
 
-const RJCODE_REGEX = /R[JE]\d{6,8}/;
+const RJCODE_REGEX = /R[JE](\d{6,8})/;
 
 /**
  * Returns list of playable tracks in a given folder. Track is an object
