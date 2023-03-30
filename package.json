@@ -39,7 +39,7 @@
     "babel-plugin-inferno": "^6.6.0",
     "babel-polyfill": "^6.26.0",
     "clean-webpack-plugin": "^4.0.0",
-    "concurrently": "^7.6.0",
+    "concurrently": "^8.0.1",
     "css-loader": "^6.7.3",
     "css-minimizer-webpack-plugin": "^4.2.2",
     "eslint": "^8.37.0",
