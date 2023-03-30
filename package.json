@@ -63,7 +63,7 @@
     "style-loader": "^3.3.2",
     "uikit": "^3.16.13",
     "url-loader": "^4.1.1",
-    "webpack": "^5.76.2",
+    "webpack": "^5.77.0",
     "webpack-cli": "^5.0.1",
     "webpack-dev-server": "^4.13.1"
   }
