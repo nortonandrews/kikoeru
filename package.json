@@ -66,5 +66,27 @@
     "webpack": "^5.82.0",
     "webpack-cli": "^5.1.1",
     "webpack-dev-server": "^4.15.0"
+  },
+  "release": {
+    "plugins": [
+      "@semantic-release/commit-analyzer",
+      "@semantic-release/release-notes-generator",
+      [
+        "@semantic-release/github",
+        {
+          "assets": [
+            {
+              "path": "build/Shubot.tar.gz"
+            }
+          ]
+        }
+      ],
+      [
+        "@semantic-release/exec",
+        {
+          "prepareCmd": "npm run build && cd dist && tar -czf kikoeru.tar.gz *"
+        }
+      ]
+    ]
   }
 }
