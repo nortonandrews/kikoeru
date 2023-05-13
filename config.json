@@ -1,5 +1,5 @@
 {
-  "rootDir": "R:/",
+  "rootDir": "/mnt/Media/Voice",
   "password": false,
   "scannerMaxRecursionDepth": 2,
   "worksPerPage": 12,
