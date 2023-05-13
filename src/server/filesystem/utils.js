@@ -4,7 +4,7 @@ const recursiveReaddir = require('recursive-readdir');
 const { orderBy } = require('natural-orderby');
 const { PromisePool } = require('@supercharge/promise-pool');
 
-const config = require('../../../config.json');
+const config = require('../config');
 
 const RJCODE_REGEX = /R[JE](\d{6,8})/;
 

@@ -14,7 +14,7 @@ const {
   RJCODE_REGEX,
 } = require('./utils');
 
-const config = require('../../../config.json');
+const config = require('../config');
 
 /**
  * Takes a single folder, fetches metadata and adds it to the database.
