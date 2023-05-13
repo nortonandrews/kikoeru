@@ -88,12 +88,7 @@
       [
         "@semantic-release/exec",
         {
-          "prepareCmd": [
-            "sed -i 's/<version>/${nextRelease.version}/' package.json",
-            "npm run build",
-            "tar -czf kikoeru.tar.gz dist static package.json package-lock.json",
-            "zip kikoeru.zip dist static package.json package-lock.json"
-          ]
+          "prepareCmd": "sed -i 's/<version>/${nextRelease.version}/' package.json && npm run build && tar -czf kikoeru.tar.gz dist static package.json package-lock.json && zip kikoeru.zip dist static package.json package-lock.json"
         }
       ]
     ]
