@@ -10,6 +10,14 @@ const { router: authRoutes, authenticator } = require('./auth');
 const app = express();
 const MemoryStore = memorystore(session);
 
+const { version } = require('../../package.json');
+
+if (process.argv.includes('--version')) {
+  // eslint-disable-next-line no-console
+  console.log(version);
+  process.exit();
+}
+
 // For handling authentication POST
 app.use(express.urlencoded({ extended: false }));
 

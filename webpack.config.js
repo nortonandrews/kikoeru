@@ -1,7 +1,8 @@
-const path = require('path');
+const CopyPlugin = require("copy-webpack-plugin");
 const CssMinimizerPlugin = require('css-minimizer-webpack-plugin');
-const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+const path = require('path');
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 
 const production = process.argv[process.argv.indexOf('--mode') + 1] === 'production';
@@ -64,6 +65,11 @@ module.exports = {
     new CleanWebpackPlugin(),
     new HtmlWebpackPlugin({
       template: './static/index.html',
+    }),
+    new CopyPlugin({
+      patterns: [
+        { from: 'src/server', to: 'server' },
+      ],
     }),
   ],
   optimization: {

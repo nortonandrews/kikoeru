@@ -1,11 +1,11 @@
 {
   "name": "kikoeru",
-  "version": "0.3.0",
+  "version": "<version>",
   "description": "Web media player, specifically for voice works.",
   "main": "src/server/index.jsx",
   "scripts": {
     "build": "webpack --mode production",
-    "start": "cross-env NODE_ENV=production node src/server/index.js",
+    "start": "cross-env NODE_ENV=production node dist/server/index.js",
     "client": "webpack-dev-server --mode development --devtool inline-source-map --hot",
     "server": "nodemon src/server/index.js",
     "dev": "concurrently \"npm run server\" \"npm run client\"",
@@ -40,6 +40,7 @@
     "babel-polyfill": "^6.26.0",
     "clean-webpack-plugin": "^4.0.0",
     "concurrently": "^8.0.1",
+    "copy-webpack-plugin": "^11.0.0",
     "css-loader": "^6.7.3",
     "css-minimizer-webpack-plugin": "^5.0.0",
     "eslint": "^8.40.0",
@@ -76,7 +77,10 @@
         {
           "assets": [
             {
-              "path": "build/Shubot.tar.gz"
+              "path": [
+                "kikoeru.tar.gz",
+                "kikoeru.zip"
+              ]
             }
           ]
         }
@@ -84,7 +88,12 @@
       [
         "@semantic-release/exec",
         {
-          "prepareCmd": "npm run build && cd dist && tar -czf kikoeru.tar.gz *"
+          "prepareCmd": [
+            "sed -i 's/<version>/${nextRelease.version}/' package.json",
+            "npm run build",
+            "tar -czf kikoeru.tar.gz dist static package.json package-lock.json",
+            "zip kikoeru.zip dist static package.json package-lock.json"
+          ]
         }
       ]
     ]
