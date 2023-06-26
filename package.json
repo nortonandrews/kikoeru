@@ -62,7 +62,7 @@
     "nodemon": "^2.0.22",
     "redux": "^4.2.1",
     "style-loader": "^3.3.3",
-    "uikit": "^3.16.21",
+    "uikit": "^3.16.22",
     "url-loader": "^4.1.1",
     "webpack": "^5.88.0",
     "webpack-cli": "^5.1.4",
