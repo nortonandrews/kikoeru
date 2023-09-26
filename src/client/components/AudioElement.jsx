@@ -1,7 +1,7 @@
 import { Component, createRef } from 'inferno';
 import { connect } from 'inferno-redux';
 
-const mapStateToProps = state => ({
+const mapStateToProps = (state) => ({
   playing: state.playing,
   progress: state.progress,
   seek: state.seek,
@@ -93,7 +93,7 @@ class AudioElement extends Component {
     // TODO: this fetch causes the notification to show no metadata for a second
     // while it fetches, consider keeping this saved client-side somewhere
     fetch(`/api/work/${id}`)
-      .then(res => res.json())
+      .then((res) => res.json())
       .then((metadata) => {
         if ('mediaSession' in navigator) {
           navigator.mediaSession.metadata = new MediaMetadata({

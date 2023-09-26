@@ -25,11 +25,11 @@ class Work extends Component {
     const { match } = this.props;
 
     // TODO: test if status code is 200, show error UI otherwise
-    const metadataPromise = fetch(`/api/work/${match.params.rjcode}`).then(res => res.json());
-    const tracksPromise = fetch(`/api/tracks/${match.params.rjcode}`).then(res => res.json());
+    const metadataPromise = fetch(`/api/work/${match.params.rjcode}`).then((res) => res.json());
+    const tracksPromise = fetch(`/api/tracks/${match.params.rjcode}`).then((res) => res.json());
 
     Promise.all([metadataPromise, tracksPromise])
-      .then(res => this.setState({
+      .then((res) => this.setState({
         metadata: res[0],
         tracks: res[1].map((track) => {
           // TODO: mixing id with rjcode smells fishy . test if breaks anything on < 6 digit ids
