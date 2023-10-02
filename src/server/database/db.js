@@ -11,13 +11,11 @@ const knex = require('knex')({
  * Takes a work metadata object and inserts it into the database.
  * @param {Object} work Work object.
  */
-const insertWorkMetadata = (work) => knex.transaction((trx) => trx.raw(
-  trx('t_circle')
-    .insert({
-      id: work.circle.id,
-      name: work.circle.name,
-    }).toString().replace('insert', 'insert or ignore'),
-)
+const insertWorkMetadata = (work) => knex.transaction((trx) => trx('t_circle')
+  .insert({
+    id: work.circle.id,
+    name: work.circle.name,
+  }).onConflict('id').ignore()
   .then(() => trx('t_work')
     .insert({
       id: work.id,

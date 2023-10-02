@@ -2,26 +2,6 @@ const fetch = require('node-fetch');
 const htmlparser = require('htmlparser2');
 
 /**
- * Generates a hash integer from a given string. Hopefully only temporary until
- * reshnix exposes VA ids for scraping.
- * @param {String} name
- */
-const hashNameIntoInt = (name) => {
-  let hash = '';
-
-  for (let i = 0; i < name.length; i += 1) {
-    const char = name.charCodeAt(i);
-    // eslint-disable-next-line no-bitwise
-    hash = ((hash << 5) - hash) + char;
-  }
-
-  // eslint-disable-next-line no-bitwise
-  hash |= 0;
-  hash = Math.abs(Math.round(hash / 1000));
-  return hash;
-};
-
-/**
  * Scrapes work metadata from public HVDB page HTML.
  * @param {Integer} id Work id.
  */
@@ -64,7 +44,7 @@ const scrapeWorkMetadata = (id) => new Promise((resolve, reject) => {
               writeTo = 'tag.name';
             } else if (attrs.href.indexOf('CVWorks') !== -1) {
               work.vas.push({
-                id: hashNameIntoInt(attrs.href), // TODO: RESHNIX!!!
+                id: attrs.href.substring(attrs.href.lastIndexOf('/') + 1),
               });
               writeTo = 'va.name';
             }
@@ -75,13 +55,25 @@ const scrapeWorkMetadata = (id) => new Promise((resolve, reject) => {
         ontext: (text) => {
           switch (writeTo) {
             case 'circle.name':
-              work.circle.name = text;
+              if (work.circle.name) {
+                work.circle.name += text;
+              } else {
+                work.circle.name = text;
+              }
               break;
             case 'tag.name':
-              work.tags[work.tags.length - 1].name = text;
+              if (work.tags[work.tags.length - 1].name) {
+                work.tags[work.tags.length - 1].name += text;
+              } else {
+                work.tags[work.tags.length - 1].name = text;
+              }
               break;
             case 'va.name':
-              work.vas[work.vas.length - 1].name = text;
+              if (work.vas[work.vas.length - 1].name) {
+                work.vas[work.vas.length - 1].name += text;
+              } else {
+                work.vas[work.vas.length - 1].name = text;
+              }
               break;
             default:
           }
