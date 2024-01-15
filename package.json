@@ -61,7 +61,7 @@
     "mini-css-extract-plugin": "^2.7.7",
     "nodemon": "^3.0.2",
     "redux": "^4.2.1",
-    "style-loader": "^3.3.3",
+    "style-loader": "^3.3.4",
     "uikit": "^3.17.11",
     "url-loader": "^4.1.1",
     "webpack": "^5.89.0",
