@@ -19,7 +19,7 @@
     "@supercharge/promise-pool": "^3.1.0",
     "cross-env": "^7.0.3",
     "express": "^4.18.2",
-    "express-session": "^1.17.3",
+    "express-session": "^1.18.0",
     "htmlparser2": "^9.1.0",
     "knex": "^3.1.0",
     "memorystore": "^1.6.7",
