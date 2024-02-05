@@ -57,7 +57,7 @@
     "inferno-redux": "^8.2.3",
     "inferno-router": "^8",
     "less": "^4.2.0",
-    "less-loader": "^11.1.4",
+    "less-loader": "^12.2.0",
     "mini-css-extract-plugin": "^2.7.7",
     "nodemon": "^3.0.2",
     "redux": "^5.0.1",
