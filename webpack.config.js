@@ -56,9 +56,14 @@ module.exports = {
     port: 3000,
     open: true,
     historyApiFallback: true,
-    proxy: {
-      '/api': 'http://localhost:8888',
-    },
+    proxy: [
+      {
+        '/api': {
+          context: ['/api'],
+          target: 'http://localhost:8888',
+        },
+      },
+    ],
   },
   plugins: [
     new MiniCssExtractPlugin(),
