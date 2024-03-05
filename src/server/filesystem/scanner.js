@@ -36,7 +36,7 @@ const processFolder = (id, folder) => db.knex('t_work')
 
     // New folder.
     console.log(` * Found new folder: ${folder}`);
-    const rjcode = parseRjcode(id);
+    const rjcode = parseRjcode(id.toString());
 
     console.log(` -> [RJ${rjcode}] Fetching metadata from HVDB...`);
     return scrapeWorkMetadata(id)
@@ -84,7 +84,7 @@ const performCleanup = () => {
           console.warn(` ! ${work.dir} is missing from filesystem. Removing from database...`);
           db.removeWork(work.id)
             .then((result) => {
-              const rjcode = parseRjcode(work.id);
+              const rjcode = parseRjcode(work.id.toString());
               deleteCoverImageFromDisk(rjcode)
                 .catch(() => console.log(` -> [RJ${rjcode}] Failed to delete cover image.`))
                 .then(() => resolve(result));
