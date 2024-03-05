@@ -31,7 +31,7 @@ class AudioElement extends Component {
       const { dispatch } = this.props;
       dispatch({
         type: 'TIME_UPDATE',
-        payload: evt.target.currentTime / evt.target.duration * 100,
+        payload: (evt.target.currentTime / evt.target.duration) * 100,
       });
     },
   };
