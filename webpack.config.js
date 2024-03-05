@@ -58,10 +58,8 @@ module.exports = {
     historyApiFallback: true,
     proxy: [
       {
-        '/api': {
-          context: ['/api'],
-          target: 'http://localhost:8888',
-        },
+        context: ['/api'],
+        target: 'http://localhost:8888',
       },
     ],
   },
