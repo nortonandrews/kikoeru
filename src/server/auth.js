@@ -1,15 +1,15 @@
 const path = require('path');
 const express = require('express');
 
-const config = require('../../config.json');
+const config = require('./config');
 
 const router = express.Router();
 
-router.get('/', (req, res, next) => {
+router.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, '..', '..', 'static', 'auth.html'));
 });
 
-router.post('/', (req, res, next) => {
+router.post('/', (req, res) => {
   if (req.body.password === config.password) {
     req.session.auth = true;
   }

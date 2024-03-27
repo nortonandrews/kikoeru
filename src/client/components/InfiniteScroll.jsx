@@ -17,14 +17,14 @@ const defaultThreshold = {
 };
 
 const parseThreshold = (scrollThreshold) => {
-  if (typeof scrollThreshold === "number") {
+  if (typeof scrollThreshold === 'number') {
     return {
       unit: ThresholdUnits.Percent,
       value: scrollThreshold * 100,
     };
   }
 
-  if (typeof scrollThreshold === "string") {
+  if (typeof scrollThreshold === 'string') {
     if (scrollThreshold.match(/^(\d*(\.\d+)?)px$/)) {
       return {
         unit: ThresholdUnits.Pixel,
@@ -47,7 +47,7 @@ const parseThreshold = (scrollThreshold) => {
   console.warn('scrollThreshold should be string or number');
 
   return defaultThreshold;
-}
+};
 
 // https://remysharp.com/2010/07/21/throttling-function-calls
 const throttle = (fn, threshhold, scope) => {
@@ -58,7 +58,7 @@ const throttle = (fn, threshhold, scope) => {
     const context = scope || this;
 
     const now = +new Date();
-    let args = arguments;
+    const args = arguments;
     if (last && now < last + threshhold) {
       // hold on to it
       clearTimeout(deferTimer);
@@ -293,13 +293,13 @@ class InfiniteScroll extends Component {
       <div style={outerDivStyle}>
         <div
           className={`infinite-scroll-component ${this.props.className || ''}`}
-          ref={infScroll => (this._infScroll = infScroll)}
+          ref={(infScroll) => (this._infScroll = infScroll)}
           style={style}
         >
           {this.props.pullDownToRefresh && (
             <div
               style={{ position: 'relative' }}
-              ref={pullDown => (this._pullDown = pullDown)}
+              ref={(pullDown) => (this._pullDown = pullDown)}
             >
               <div
                 style={{

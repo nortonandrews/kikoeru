@@ -26,29 +26,31 @@ UIkit.use(Icons);
 const browserHistory = createBrowserHistory();
 const store = createStore(Reducer);
 
-const App = () => (
-  <Provider store={store}>
-    <ErrorBoundary>
-      <BrowserRouter history={browserHistory}>
-        <NavBar />
-        <Switch>
-          <Route exact path="/" component={Works} />
-          <Route path="/player/" component={Player} />
-          <Route path="/work/:rjcode" component={Work} />
+function App() {
+  return (
+    <Provider store={store}>
+      <ErrorBoundary>
+        <BrowserRouter history={browserHistory}>
+          <NavBar />
+          <Switch>
+            <Route exact path="/" component={Works} />
+            <Route path="/player/" component={Player} />
+            <Route path="/work/:rjcode" component={Work} />
 
-          <Route path="/circle/:id" component={p => <Works restrict="circle" {...p} />} />
-          <Route path="/tag/:id" component={p => <Works restrict="tag" {...p} />} />
-          <Route path="/va/:id" component={p => <Works restrict="va" {...p} />} />
+            <Route path="/circle/:id" component={(p) => <Works restrict="circle" {...p} />} />
+            <Route path="/tag/:id" component={(p) => <Works restrict="tag" {...p} />} />
+            <Route path="/va/:id" component={(p) => <Works restrict="va" {...p} />} />
 
-          <Route path="/circles/" component={p => <List restrict="circle" {...p} />} />
-          <Route path="/tags/" component={p => <List restrict="tag" {...p} />} />
-          <Route path="/vas/" component={p => <List restrict="va" {...p} />} />
-        </Switch>
-        <PlayerBar />
-      </BrowserRouter>
-    </ErrorBoundary>
-    <AudioElement />
-  </Provider>
-);
+            <Route path="/circles/" component={(p) => <List restrict="circle" {...p} />} />
+            <Route path="/tags/" component={(p) => <List restrict="tag" {...p} />} />
+            <Route path="/vas/" component={(p) => <List restrict="va" {...p} />} />
+          </Switch>
+          <PlayerBar />
+        </BrowserRouter>
+      </ErrorBoundary>
+      <AudioElement />
+    </Provider>
+  );
+}
 
 render(<App />, document.getElementById('root'));

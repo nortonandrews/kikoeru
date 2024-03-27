@@ -11,13 +11,11 @@ const knex = require('knex')({
  * Takes a work metadata object and inserts it into the database.
  * @param {Object} work Work object.
  */
-const insertWorkMetadata = work => knex.transaction(trx => trx.raw(
-  trx('t_circle')
-    .insert({
-      id: work.circle.id,
-      name: work.circle.name,
-    }).toString().replace('insert', 'insert or ignore'),
-)
+const insertWorkMetadata = (work) => knex.transaction((trx) => trx('t_circle')
+  .insert({
+    id: work.circle.id,
+    name: work.circle.name,
+  }).onConflict('id').ignore()
   .then(() => trx('t_work')
     .insert({
       id: work.id,
@@ -68,7 +66,7 @@ const insertWorkMetadata = work => knex.transaction(trx => trx.raw(
  * Fetches metadata for a specific work id.
  * @param {Number} id Work identifier.
  */
-const getWorkMetadata = id => new Promise((resolve, reject) => {
+const getWorkMetadata = (id) => new Promise((resolve, reject) => {
   // TODO: do this all in a single transaction?
   knex('t_work')
     .select('*')
@@ -95,20 +93,20 @@ const getWorkMetadata = id => new Promise((resolve, reject) => {
             .where('r_tag_work.work_id', '=', id)
             .join('t_tag', 't_tag.id', '=', 'r_tag_work.tag_id')
             .then((tagsRes) => {
-              work.tags = tagsRes.map(tag => ({ id: tag.tag_id, name: tag.name }));
+              work.tags = tagsRes.map((tag) => ({ id: tag.tag_id, name: tag.name }));
 
               knex('r_va_work')
                 .select('va_id', 'name')
                 .where('r_va_work.work_id', '=', id)
                 .join('t_va', 't_va.id', '=', 'r_va_work.va_id')
                 .then((vaRes) => {
-                  work.vas = vaRes.map(va => ({ id: va.va_id, name: va.name }));
+                  work.vas = vaRes.map((va) => ({ id: va.va_id, name: va.name }));
                   resolve(work);
                 });
             });
         });
     })
-    .catch(err => reject(err));
+    .catch((err) => reject(err));
 });
 
 /**
@@ -118,16 +116,16 @@ const getWorkMetadata = id => new Promise((resolve, reject) => {
  * @param {*} tags Array of tag ids to check.
  * @param {*} vas Array of VA ids to check.
  */
-const cleanupOrphans = (trx, circle, tags, vas) => new Promise(async (resolve, reject) => {
+const cleanupOrphans = async (trx, circle, tags, vas) => {
   const getCount = (tableName, colName, colValue) => new Promise((resolveCount, rejectCount) => {
     trx(tableName)
       .select(colName)
       .where(colName, '=', colValue)
       .count()
       .first()
-      .then(res => res['count(*)'])
-      .then(count => resolveCount(count))
-      .catch(err => rejectCount(err));
+      .then((res) => res['count(*)'])
+      .then((count) => resolveCount(count))
+      .catch((err) => rejectCount(err));
   });
 
   const promises = [];
@@ -139,7 +137,7 @@ const cleanupOrphans = (trx, circle, tags, vas) => new Promise(async (resolve, r
             .del()
             .where('id', '=', circle)
             .then(() => resolveCircle())
-            .catch(err => rejectCircle(err));
+            .catch((err) => rejectCircle(err));
         } else {
           resolveCircle();
         }
@@ -176,18 +174,14 @@ const cleanupOrphans = (trx, circle, tags, vas) => new Promise(async (resolve, r
     }
   }
 
-  Promise.all(promises)
-    .then((results) => {
-      resolve(results);
-    })
-    .catch(err => reject(err));
-});
+  return Promise.all(promises);
+};
 
 /**
  * Removes a work and then its orphaned circles, tags & VAs from the database.
  * @param {Integer} id Work id.
  */
-const removeWork = id => new Promise(async (resolve, reject) => {
+const removeWork = async (id) => {
   const trx = await knex.transaction();
 
   // Save circle, tags and VAs to array for later testing
@@ -196,7 +190,7 @@ const removeWork = id => new Promise(async (resolve, reject) => {
   const vas = await trx('r_va_work').select('va_id').where('work_id', '=', id);
 
   // Remove work and its relationships
-  trx('t_work')
+  return trx('t_work')
     .del()
     .where('id', '=', id)
     .then(trx('r_tag_work')
@@ -208,13 +202,11 @@ const removeWork = id => new Promise(async (resolve, reject) => {
         .then(() => cleanupOrphans(
           trx,
           circle.circle_id,
-          tags.map(tag => tag.tag_id),
-          vas.map(va => va.va_id),
+          tags.map((tag) => tag.tag_id),
+          vas.map((va) => va.va_id),
         ))
-        .then(trx.commit)
-        .then(() => resolve())))
-    .catch(err => reject(err));
-});
+        .then(trx.commit)));
+};
 
 /**
  * Returns list of work ids by circle, tag or VA.

@@ -3,11 +3,18 @@ const fs = require('fs');
 const path = require('path');
 const fetch = require('node-fetch');
 const db = require('../database/db');
-const { getFolderList, deleteCoverImageFromDisk, saveCoverImageToDisk, throttlePromises } = require('./utils');
 const { createSchema } = require('../database/schema');
 const scrapeWorkMetadata = require('../hvdb');
+const {
+  getFolderList,
+  deleteCoverImageFromDisk,
+  saveCoverImageToDisk,
+  throttlePromises,
+  parseRjcode,
+  RJCODE_REGEX,
+} = require('./utils');
 
-const config = require('../../../config.json');
+const config = require('../config');
 
 /**
  * Takes a single folder, fetches metadata and adds it to the database.
@@ -29,7 +36,7 @@ const processFolder = (id, folder) => db.knex('t_work')
 
     // New folder.
     console.log(` * Found new folder: ${folder}`);
-    const rjcode = (`000000${id}`).slice(-6); // zero-pad to 6 digits
+    const rjcode = parseRjcode(id.toString());
 
     console.log(` -> [RJ${rjcode}] Fetching metadata from HVDB...`);
     return scrapeWorkMetadata(id)
@@ -58,7 +65,7 @@ const processFolder = (id, folder) => db.knex('t_work')
         // eslint-disable-next-line no-param-reassign
         metadata.dir = folder;
         return db.insertWorkMetadata(metadata)
-          .then(console.log(` -> [RJ${rjcode}] Finished adding to the database!`))
+          .then(() => console.log(` -> [RJ${rjcode}] Finished adding to the database!`))
           .then(() => 'added');
       })
       .catch((err) => {
@@ -72,17 +79,17 @@ const performCleanup = () => {
   return db.knex('t_work')
     .select('id', 'dir')
     .then((works) => {
-      const promises = works.map(work => new Promise((resolve, reject) => {
+      const promises = works.map((work) => new Promise((resolve, reject) => {
         if (!fs.existsSync(path.join(config.rootDir, work.dir))) {
           console.warn(` ! ${work.dir} is missing from filesystem. Removing from database...`);
           db.removeWork(work.id)
             .then((result) => {
-              const rjcode = (`000000${work.id}`).slice(-6); // zero-pad to 6 digits
+              const rjcode = parseRjcode(work.id.toString());
               deleteCoverImageFromDisk(rjcode)
                 .catch(() => console.log(` -> [RJ${rjcode}] Failed to delete cover image.`))
                 .then(() => resolve(result));
             })
-            .catch(err => reject(err));
+            .catch((err) => reject(err));
         } else {
           resolve();
         }
@@ -111,9 +118,8 @@ const performScan = () => {
 
         try {
           for await (const folder of getFolderList()) {
-            const id = folder.match(/RJ(\d{6})/)[1];
+            const id = folder.match(RJCODE_REGEX)[1];
             promises.push(() => processFolder(id, folder));
-            
           }
         } catch (err) {
           console.error(` ! ERROR while trying to get folder list: ${err.message}`);
@@ -129,7 +135,7 @@ const performScan = () => {
             };
 
             // eslint-disable-next-line no-return-assign
-            results.forEach(x => counts[x] += 1);
+            results.forEach((x) => counts[x] += 1);
 
             console.log(` * Finished scan. Added ${counts.added}, skipped ${counts.skipped} and failed to add ${counts.failed} works.`);
             db.knex.destroy();

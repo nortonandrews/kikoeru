@@ -19,7 +19,7 @@ class WorkCard extends Component {
     const { id } = this.props;
 
     fetch(`/api/work/${id}`)
-      .then(res => res.json())
+      .then((res) => res.json())
       .then((res) => {
         this.setState({ metadata: res });
       })
@@ -75,10 +75,10 @@ class Works extends Component {
       ? `/api/${restrict || 'works'}/${match.params.id}` : '/api/works/';
 
     fetch(url)
-      .then(res => res.json())
+      .then((res) => res.json())
       .then((res) => {
         fetch(`/api/get-name/${restrict}/${match.params.id}`)
-          .then(nameRes => nameRes.text())
+          .then((nameRes) => nameRes.text())
           .then((name) => {
             let pageTitle;
 
@@ -125,7 +125,7 @@ class Works extends Component {
       ? `/api/${restrict || 'works'}/${match.params.id}/${oldestId}` : `/api/works/${oldestId}`;
 
     fetch(url)
-      .then(res => res.json())
+      .then((res) => res.json())
       .then((res) => {
         if (!res.length) {
           this.setState({
@@ -166,7 +166,7 @@ class Works extends Component {
           loader={<div className="uk-align-center uk-margin-top uk-margin" uk-spinner="ratio: 1" />}
           endMessage={<p className="uk-text-center uk-text-meta" style={{ 'padding-bottom': '24px' }}>No more works.</p>}
         >
-          {works.map(work => <WorkCard id={work.id} key={work.id} />)}
+          {works.map((work) => <WorkCard id={work.id} key={work.id} />)}
         </InfiniteScroll>
       </div>
     );
