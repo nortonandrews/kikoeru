@@ -19,8 +19,8 @@ class List extends Component {
     const { restrict } = this.props;
 
     fetch(`/api/${restrict}s/`)
-      .then(res => res.json())
-      .then(res => this.setState({
+      .then((res) => res.json())
+      .then((res) => this.setState({
         items: res,
       }))
       .catch((err) => {
@@ -35,7 +35,7 @@ class List extends Component {
 
     this.setState({
       items,
-      filteredItems: items.filter(x => x.name.toLowerCase().indexOf(data.get('filter_str').toLowerCase()) !== -1),
+      filteredItems: items.filter((x) => x.name.toLowerCase().indexOf(data.get('filter_str').toLowerCase()) !== -1),
     });
   }
 
@@ -52,7 +52,7 @@ class List extends Component {
     }
 
     const visibleItems = filteredItems || items;
-    const elementList = visibleItems.map(item => (
+    const elementList = visibleItems.map((item) => (
       <Link
         to={`/${restrict}/${item.id}`}
         className="uk-button uk-button-default uk-width-1 uk-margin-small-bottom"
@@ -63,7 +63,11 @@ class List extends Component {
 
     return (
       <div className="uk-container">
-        <h2 className="uk-margin-top">All {restrict}s</h2>
+        <h2 className="uk-margin-top">
+          All
+          {restrict}
+          s
+        </h2>
         <form onSubmit={this.onFilter}>
           <input name="filter_str" className="uk-input uk-width-1" type="text" placeholder={`Search for a ${restrict}...`} />
         </form>

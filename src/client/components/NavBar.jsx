@@ -6,7 +6,7 @@ const closeOffCanvasNav = () => {
   UIkit.offcanvas(element).hide();
 };
 
-const OffCanvasNav = (props) => {
+function OffCanvasNav(props) {
   const { location } = props;
   const path = location.pathname;
 
@@ -47,29 +47,27 @@ const OffCanvasNav = (props) => {
       </div>
     </div>
   );
-};
+}
 const OffCanvasNavWithRouter = withRouter(OffCanvasNav);
 
-const NavBar = (props) => {
+function NavBar(props) {
   const { location } = props;
   const transparent = location.pathname === '/player/';
 
   return (
-    <>
-      <div className={`uk-navbar uk-navbar-container uk-navbar-transparent ${transparent ? '' : 'uk-background-secondary'}`} uk-navbar>
-        <div className="uk-navbar-left uk-dark">
-          <div className="uk-navbar-item uk-logo">
-            <span className="k-logo" />
-          </div>
-        </div>
-
-        <div className="uk-navbar-right">
-          <button type="button" className="uk-navbar-toggle" uk-toggle="target: #offcanvas-nav" uk-navbar-toggle-icon />
-          <OffCanvasNavWithRouter />
+    <div className={`uk-navbar uk-navbar-container uk-navbar-transparent ${transparent ? '' : 'uk-background-secondary'}`} uk-navbar>
+      <div className="uk-navbar-left uk-dark">
+        <div className="uk-navbar-item uk-logo">
+          <span className="k-logo" />
         </div>
       </div>
-    </>
+
+      <div className="uk-navbar-right">
+        <button type="button" className="uk-navbar-toggle" uk-toggle="target: #offcanvas-nav" uk-navbar-toggle-icon />
+        <OffCanvasNavWithRouter />
+      </div>
+    </div>
   );
-};
+}
 
 export default withRouter(NavBar);

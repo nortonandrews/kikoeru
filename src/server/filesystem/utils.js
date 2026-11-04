@@ -2,8 +2,11 @@ const fs = require('fs');
 const path = require('path');
 const recursiveReaddir = require('recursive-readdir');
 const { orderBy } = require('natural-orderby');
+const { PromisePool } = require('@supercharge/promise-pool');
 
-const config = require('../../../config.json');
+const config = require('../config');
+
+const RJCODE_REGEX = /R[JE](\d{6,8})/;
 
 /**
  * Returns list of playable tracks in a given folder. Track is an object
@@ -31,7 +34,7 @@ const getTrackList = (id, dir) => recursiveReaddir(
         title: path.basename(file),
         subtitle: dirName === '.' ? null : dirName,
       };
-    }), [v => v.subtitle, v => v.title]);
+    }), [(v) => v.subtitle, (v) => v.title]);
 
     // Add hash to each file
     const sortedHashedFiles = sortedFiles.map(
@@ -58,7 +61,7 @@ async function* getFolderList(current = '', depth = 0) {
 
     // eslint-disable-next-line no-await-in-loop
     if ((await fs.promises.stat(absolutePath)).isDirectory()) {
-      if (folder.match(/RJ\d{6}/)) {
+      if (folder.match(RJCODE_REGEX)) {
         // Found a work folder, don't go any deeper.
         yield relativePath;
       } else if (depth + 1 < config.scannerMaxRecursionDepth) {
@@ -73,7 +76,7 @@ async function* getFolderList(current = '', depth = 0) {
  * Deletes a work's cover image from disk.
  * @param {String} rjcode Work RJ code (only the 6 digits, zero-padded).
  */
-const deleteCoverImageFromDisk = rjcode => new Promise((resolve, reject) => {
+const deleteCoverImageFromDisk = (rjcode) => new Promise((resolve, reject) => {
   fs.unlink(path.join(config.rootDir, 'Images', `RJ${rjcode}.jpg`), (err) => {
     if (err) {
       reject(err);
@@ -102,37 +105,38 @@ const saveCoverImageToDisk = (stream, rjcode) => new Promise((resolve, reject) =
 
 /**
  * Runs an array of Promise returning functions at a specified rate
- * @param {Number} the maximum number of unresolved promises that may exist at a given time
- * @param {Array<Function>} an array of promise-creating functions 
+ * @param {Number} maxPending the maximum number of unresolved promises
+ * that may exist at a given time
+ * @param {Array<Function>} asyncFuncs an array of promise-creating functions
 */
 const throttlePromises = (maxPending, asyncFuncs) => {
-  return new Promise((resolve, reject) => {
-      let numPending = 0;
-      let nextFuncId = 0;
-      const promisedValues = [];
-      (function check() {
-          if (nextFuncId >= asyncFuncs.length) { // All promises created
-              if (numPending == 0) resolve(promisedValues); // All promises fulfilled
-              return;
-          }
-          while (numPending < maxPending) { // Room for creating promise(s)
-              numPending++;
-              const thisFuncId = nextFuncId++;
-              asyncFuncs[thisFuncId]().then(value => {
-                  promisedValues[thisFuncId] = value;
-                  numPending--;
-                  check();
-              }).catch(reject);
-          }
-      })();
-  });
+  const promisedValues = [];
+  return PromisePool
+    .withConcurrency(maxPending)
+    .for(asyncFuncs)
+    .process(
+      async (func, index) => func().then((value) => {
+        promisedValues[index] = value;
+      }),
+    ).then(() => promisedValues);
 };
 
+/**
+ * Parses an RJ code string and returns the numeric identifier
+ * @param {string} workid The work id the parse, valid values e.g. 123, RJ123, RJ1234567
+ * @returns {Number} The numeric identifier for this work padded to the correct length
+ */
+const parseRjcode = (workid) => {
+  const code = workid.startsWith('RJ') ? workid.slice(2) : workid;
+  return code.length <= 6 ? code.padStart(6, '0') : code.padStart(8, '0');
+};
 
 module.exports = {
   getTrackList,
   getFolderList,
   deleteCoverImageFromDisk,
   saveCoverImageToDisk,
-  throttlePromises
+  throttlePromises,
+  parseRjcode,
+  RJCODE_REGEX,
 };

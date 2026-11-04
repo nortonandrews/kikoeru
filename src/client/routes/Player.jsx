@@ -9,7 +9,7 @@ import pauseIcon from '../static/svg/pause.svg';
 import previousIcon from '../static/svg/previous.svg';
 import nextIcon from '../static/svg/next.svg';
 
-const mapStateToProps = state => ({
+const mapStateToProps = (state) => ({
   playing: state.playing,
   progress: state.progress,
   queue: state.queue,
@@ -78,15 +78,15 @@ class Player extends Component {
     return (
       <>
         <div className="uk-background-cover uk-height-medium uk-panel uk-flex uk-flex-center uk-flex-middle" style={{ 'background-image': `linear-gradient(#0008, #0008), url("/api/cover/${currentlyPlaying.id}")` }}>
-          <button className="k-player-button k-invert" type="button" id="previous-button" onClick={evt => this.handleClick(evt, 'previous-button')}>
+          <button className="k-player-button k-invert" type="button" id="previous-button" onClick={(evt) => this.handleClick(evt, 'previous-button')}>
             <img src={previousIcon} alt="Previous Track" />
           </button>
 
-          <button className="k-player-button k-invert" type="button" id="middle-button" onClick={evt => this.handleClick(evt, 'middle-button')}>
+          <button className="k-player-button k-invert" type="button" id="middle-button" onClick={(evt) => this.handleClick(evt, 'middle-button')}>
             <img src={playing ? pauseIcon : playIcon} alt="Play" />
           </button>
 
-          <button className="k-player-button k-invert" type="button" id="next-button" onClick={evt => this.handleClick(evt, 'next-button')}>
+          <button className="k-player-button k-invert" type="button" id="next-button" onClick={(evt) => this.handleClick(evt, 'next-button')}>
             <img src={nextIcon} alt="Next Track" />
           </button>
 

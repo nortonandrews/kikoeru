@@ -190,3 +190,7 @@
 .k-player-seekbar input[type="range"]::-moz-focus-outer {
     border: 0;
 }
+
+.uk-link-heading {
+    word-wrap: break-word;
+}

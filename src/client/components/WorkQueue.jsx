@@ -3,32 +3,34 @@ import { connect } from 'inferno-redux';
 
 import UIkit from 'uikit';
 
-const mapStateToProps = state => ({
+const mapStateToProps = (state) => ({
   // Track hash if currently playing a track, else null.
   currentlyPlayingHash: (state.playing && state.queue[state.queueIndex])
     ? state.queue[state.queueIndex].hash : null,
 });
 
 // Renders a single row (track) inside the list.
-const FileTableRow = ({
+function FileTableRow({
   clickHandler, file, index, fileOptions, usePauseIcon,
-}) => (
-  <tr>
-    <td><button type="button" uk-icon={`icon: ${usePauseIcon ? 'refresh' : 'play-circle'}`} className={`uk-button k-button-icon ${usePauseIcon ? 'k-button-active' : ''}`} onClick={evt => clickHandler(evt, index)} /></td>
-    <td>
-      {file.title}
-      <p className="uk-text-meta uk-margin-remove-top">{file.subtitle}</p>
-    </td>
-    <td>
-      <button type="button" uk-icon="icon: more-vertical" className="uk-button k-button-icon" />
-      <div uk-dropdown="delay-hide: 0, animation: uk-animation-slide-top-small; pos: bottom-left; mode: click; boundary: #root">
-        <ul className="uk-list uk-list-divider  uk-margin-remove-bottom">
-          {fileOptions.map(option => <li><button type="button" className="uk-button uk-button-text" onClick={(evt) => { clickHandler(evt, { type: option.type, index }); }}>{option.text}</button></li>)}
-        </ul>
-      </div>
-    </td>
-  </tr>
-);
+}) {
+  return (
+    <tr>
+      <td><button type="button" uk-icon={`icon: ${usePauseIcon ? 'refresh' : 'play-circle'}`} className={`uk-button k-button-icon ${usePauseIcon ? 'k-button-active' : ''}`} onClick={(evt) => clickHandler(evt, index)} /></td>
+      <td>
+        {file.title}
+        <p className="uk-text-meta uk-margin-remove-top">{file.subtitle}</p>
+      </td>
+      <td>
+        <button type="button" uk-icon="icon: more-vertical" className="uk-button k-button-icon" />
+        <div uk-dropdown="delay-hide: 0, animation: uk-animation-slide-top-small; pos: bottom-left; mode: click; boundary: #root">
+          <ul className="uk-list uk-list-divider  uk-margin-remove-bottom">
+            {fileOptions.map((option) => <li><button type="button" className="uk-button uk-button-text" onClick={(evt) => { clickHandler(evt, { type: option.type, index }); }}>{option.text}</button></li>)}
+          </ul>
+        </div>
+      </td>
+    </tr>
+  );
+}
 
 // Card containing the track list.
 class WorkQueue extends Component {
@@ -79,7 +81,7 @@ class WorkQueue extends Component {
       <button
         className="k-button-icon"
         type="button"
-        onClick={evt => this.handleClick(evt, { type: 'EMPTY_QUEUE' })}
+        onClick={(evt) => this.handleClick(evt, { type: 'EMPTY_QUEUE' })}
         uk-icon="icon: trash"
       />
     );

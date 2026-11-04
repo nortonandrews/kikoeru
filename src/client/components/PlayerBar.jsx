@@ -4,13 +4,13 @@ import { Link } from 'inferno-router';
 import playIcon from '../static/svg/play.svg';
 import pauseIcon from '../static/svg/pause.svg';
 
-const mapStateToProps = state => ({
+const mapStateToProps = (state) => ({
   playing: state.playing,
   queue: state.queue,
   currentlyPlaying: state.queue[state.queueIndex],
 });
 
-const PlayerBar = (props) => {
+function PlayerBar(props) {
   const {
     dispatch, playing, queue, currentlyPlaying,
   } = props;
@@ -43,6 +43,6 @@ const PlayerBar = (props) => {
       </div>
     </>
   );
-};
+}
 
 export default connect(mapStateToProps)(PlayerBar);

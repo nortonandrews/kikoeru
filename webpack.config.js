@@ -1,7 +1,8 @@
-const path = require('path');
-const OptimizeCssAssetsPlugin = require('optimize-css-assets-webpack-plugin');
-const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+const CopyPlugin = require('copy-webpack-plugin');
+const CssMinimizerPlugin = require('css-minimizer-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+const path = require('path');
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 
 const production = process.argv[process.argv.indexOf('--mode') + 1] === 'production';
@@ -24,17 +25,21 @@ module.exports = {
     {
       test: /\.(css|less)$/,
       use: [
-        {
-          loader: MiniCssExtractPlugin.loader,
-          options: { hmr: !production },
-        },
+        MiniCssExtractPlugin.loader,
         'css-loader',
         'less-loader',
       ],
     },
     {
       test: /\.(png|woff|woff2|eot|ttf|svg)$/,
-      loader: 'url-loader?limit=100000',
+      use: [
+        {
+          loader: 'url-loader',
+          options: {
+            limit: 100000,
+          },
+        },
+      ],
     },
     ],
   },
@@ -51,19 +56,29 @@ module.exports = {
     port: 3000,
     open: true,
     historyApiFallback: true,
-    proxy: {
-      '/api': 'http://localhost:8888',
-    },
+    proxy: [
+      {
+        context: ['/api'],
+        target: 'http://localhost:8888',
+      },
+    ],
   },
   plugins: [
-    new OptimizeCssAssetsPlugin(),
     new MiniCssExtractPlugin(),
     new CleanWebpackPlugin(),
     new HtmlWebpackPlugin({
       template: './static/index.html',
     }),
+    new CopyPlugin({
+      patterns: [
+        { from: 'src/server', to: 'server' },
+      ],
+    }),
   ],
   optimization: {
+    minimizer: [
+      new CssMinimizerPlugin(),
+    ],
     mangleWasmImports: true,
     splitChunks: {
       chunks: 'async',
